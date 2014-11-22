@@ -1,1 +1,13 @@
- 
+\chapter{Discussion on Architecture}
+
+\section{Modularity of architecture}
+(a) The architecture is strongly modular in the sense that different aspects of it are completely modularised and separated into different http services. (b) If the client service crashes, the stock manager service is unaffected and keeps running smoothly, and vice versa. (c) If all services are run locally in the same JVM, they will not have the same isolation. If the JVM crashes, everything crashes.
+
+\section{Naming}
+(a) There are multiple naming services in the architecture. There is port naming, books have ISBN namings, and RPC uses enums to identify the desired functions to be executed. Furthermore these RPC calls specify the privilege levels of the client using a naming scheme that pre-fixes the path in the PRC. (b) Hostnames/domain names are also used to name the services to communicate with.
+
+\section{RPC semantics used}
+The architecture implements exactly-once RPC semantics, since each request is fulfilled exactly once. For instance, when buying a book, if it is in stock you will get one, but if it is not, it will be ordered once.
+
+\section{foo}
+
