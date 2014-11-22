@@ -28,7 +28,11 @@
         <pathelement location="lib/hamcrest-core-1.3.jar"/>
         <pathelement location="lib/junit-4.11.jar"/>
     </path>
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
