@@ -1,1 +1,36 @@
 \chapter{Fundamental Abstractions - S3}
+
+\section{High level overview of S3}
+We would use the following addressing scheme for our memory abstraction: \texttt{(ip, memory address)}. So, to access memory, one would request a memory address from a specific IP, and this would be trivially translated to the machine with the memory by separating the two parts of the address. For simplicity, we represent the address as a tuple.\n
+We have no centralised component in this design. Each client just sends requests directly to the relevant machine. This system is widely scalable, limited only by the IP addressing used. So, using IPv6, we can scale up to $2^{128}$ machines, each with a memory address space of $2^{64}$.\n
+If a machine is unavailable, it will not respond, and that is interpretted as an error, which is passed to the caller. But we have no redundancy, so if a server is down, the memory it stores is unavailable as well.
+
+\section{Pseudocode of S3 APIs}
+Figure \ref{pseudocode} shows the pseudocode of our API to read/write directly from/to the memory server with the desired memory. As can be seen, the IP address is needed to read or write memory. This is obtained when allocating memory. Memory allocation is done by broadcasting a request to allocate said memory to all memory servers, and accepting the server that responds the fastest. This server then returns the full address \texttt{(IP, address)} of the newly allocated memory, and with that information we can read and write the data.
+
+\begin{figure}
+\begin{verbatim}
+def read((ip, address)):
+    send(ip, {action: 'GET', address: address})
+    res = recv(ip, timeout = 5000)
+    if res == None:
+        return False
+    return res
+
+def write(ip, data, size):
+    send(ip, {action: 'SET', size: size, data: data})
+    res = recv(ip, timeout = 5000)
+    if res == None:
+        return False
+    return True
+\end{verbatim}
+\caption{Pseudocode for read and write API \label{pseudocode}}
+\end{figure}
+
+\section{Read/write atomicity in S3}
+Read/write is atomic in our design, provided that the server rolls back the write if the (tcp) connection timed out before responding the success status. We want atomicity because it ensures that a request was either completed successfully or completely aborted. This way, we always know whether something has been read/written or not.
+
+\section{Dynamic aspects of S3}
+Our design requires that the system has at least 1 memory machine to be usable. Other than that, there are no assumptions or requirements as to the number of machines in the system. Machines can join and leave the network independently as they please. A broadcast to allocate memory will still reach all available memory servers, and the allocation will be completed at one of the machines, and the naming of the allocation will be returned to the caller. However, if a machine leaves the network while having active memory allocations, these memory allocations will be lost (the assignment specifies to not consider redundancy to mask failures). If we were to support memory access in spite of server leaves, we would introduce redundancy to the system. For example, instead of using single memory servers per IP, each IP could point to a cluster of memory servers that share the same memory. This would give us redundancy corresponding to the number of servers in the cluster.
+
+
