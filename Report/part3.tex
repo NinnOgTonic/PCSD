@@ -9,5 +9,12 @@
 \section{RPC semantics used}
 The architecture implements exactly-once RPC semantics, since each request is fulfilled exactly once. For instance, when buying a book, if it is in stock you will get one, but if it is not, it will be ordered once.
 
-\section{foo}
+\section{Proxy Servers}
+(a) It is safe to use proxy servers with the architecture of Figure 2, since there is only one back-end server, and thus no possibility of race conditions arising. (b) We would put them in front of the BookStoreHTTPServer. They would have no effect, however, again since there are not multiple back-end servers to scale against.
+
+\section{Bottlenecks}
+(a) As mentioned above, the single back-end server is a bottleneck with respect to the number of clients.
+
+\section{Effects of server crash}
+(a) If the web proxies were to cache get requests, the clients would be able to continue to request these in spite of the server being down. However, they would not be able to modify anything or look up non-cached items. (b) Yes. (c) Web caching would make things more difficult, as we would need to keep track of when the cached data becomes invalidated and must be updated or deleted.
 
