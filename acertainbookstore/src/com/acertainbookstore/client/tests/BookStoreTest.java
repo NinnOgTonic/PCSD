@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import com.acertainbookstore.business.Book;
 import com.acertainbookstore.business.BookCopy;
+import com.acertainbookstore.business.BookRating;
 import com.acertainbookstore.business.CertainBookStore;
 import com.acertainbookstore.business.ImmutableStockBook;
 import com.acertainbookstore.business.StockBook;
@@ -314,30 +315,91 @@ public class BookStoreTest {
     }
 
     /**
-     * Tests that we can rate a book
+     * Tests that a rating actually works.
      */
     @Test
-    public void testRateBooks() throws BookStoreException {
-        Set<StockBook> booksAdded = new HashSet<StockBook>();
-        booksAdded.add(getDefaultBook());
+    public void testBookRating() throws BookStoreException {
 
-        Set<StockBook> booksToAdd = new HashSet<StockBook>();
-        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 3,
-                                              "The Java Language is Litteraly Hitler",
-                                              "Python is Way Better", (float) 123, NUM_COPIES,
-                                              0, 0, 0, false));
+        Set<Integer>booksToGet = new HashSet<Integer>();
+        booksToGet.add(TEST_ISBN);
 
-        booksAdded.addAll(booksToAdd);
+        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookBefore = listBooks.get(0);
 
-        storeManager.addBooks(booksToAdd);
+        Set<BookRating>bookRatings = new HashSet<BookRating>();
+        bookRatings.add(new BookRating(TEST_ISBN, 4));
+        client.rateBooks(bookRatings);
 
-        // Get books in store
-        List<StockBook> listBooks = storeManager.getBooks();
+        List<StockBook> listBooks2 = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookAfter = listBooks2.get(0);
 
-        // Make sure the lists equal each other
-        assertTrue(listBooks.containsAll(booksAdded)
-                   && listBooks.size() == booksAdded.size());
+        assertTrue(bookAfter.getTotalRating() == bookBefore.getTotalRating() + 4);
+        assertTrue(bookAfter.getTimesRated()  == bookBefore.getTimesRated()  + 1);
     }
+
+    /**
+     * Tests that rating doesn't work on invalid ISBN's.
+     */
+    @Test
+    public void testBookRatingISBN() throws BookStoreException {
+        Set<Integer>booksToGet = new HashSet<Integer>();
+        booksToGet.add(TEST_ISBN);
+
+        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookBefore = listBooks.get(0);
+
+        try {
+            Set<BookRating>bookRatings = new HashSet<BookRating>();
+            bookRatings.add(new BookRating(-1, 4));
+            client.rateBooks(bookRatings);
+            fail();
+        } catch (BookStoreException ex) {
+            ;
+        }
+    }
+
+    /**
+     * Tests that rating doesn't work on invalid ratings.
+     */
+    @Test
+    public void testBookRatingFail() throws BookStoreException {
+        Set<Integer>booksToGet = new HashSet<Integer>();
+        booksToGet.add(TEST_ISBN);
+
+        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookBefore = listBooks.get(0);
+
+        try {
+            Set<BookRating>bookRatings = new HashSet<BookRating>();
+            bookRatings.add(new BookRating(TEST_ISBN, -1));
+            client.rateBooks(bookRatings);
+            fail();
+        } catch (BookStoreException ex) {
+            ;
+        }
+    }
+
+    /**
+     * Tests that rating doesn't work on valid ISBN's that are not in the book store.
+     */
+    @Test
+    public void testBookRatingISBNNotFound() throws BookStoreException {
+        Set<Integer>booksToGet = new HashSet<Integer>();
+        booksToGet.add(TEST_ISBN);
+
+        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookBefore = listBooks.get(0);
+
+        try {
+            Set<BookRating>bookRatings = new HashSet<BookRating>();
+            bookRatings.add(new BookRating(TEST_ISBN + 1, 1));
+            client.rateBooks(bookRatings);
+            fail();
+        } catch (BookStoreException ex) {
+            ;
+        }
+    }
+
     @AfterClass
     public static void tearDownAfterClass() throws BookStoreException {
         storeManager.removeAllBooks();
