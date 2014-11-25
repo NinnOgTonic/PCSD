@@ -9,8 +9,8 @@
 
 \section{Naming}
 \begin{description}
-\item[a:] There are multiple naming services in the architecture. There is port naming, books have ISBN namings, and RPC uses enums to identify the desired functions to be executed. Furthermore these RPC calls specify the privilege levels of the client using a naming scheme that pre-fixes the path in the PRC. Additionally we utilise DNS when running this service remote.
-\item[b:] DNS are used to resolve the IP address from hostnames/domain names when a book store or stock manager attempts to connect remotely.
+\item[a:] There are multiple naming services in the architecture. There is port naming, books have ISBN naming, and RPC uses enums to identify the desired functions to be executed. Furthermore these RPC calls specify the privilege levels of the client using a naming scheme that pre-fixes the path in the PRC. Additionally we utilise DNS when running this service remote.
+\item[b:] DNS are used to resolve the IP address from the hostnames/domain names and port pairs when a book store or stock manager attempts to connect remotely.
 \end{description}
 
 \section{RPC semantics used}
@@ -27,7 +27,7 @@ As mentioned above, the single back-end server is a bottleneck with respect to t
 
 \section{Effects of server crash}
 \begin{description}
-\item[a:] In the current implementation of this system we cannot use the web proxy for load balancing, and thus the difference that any client would experience would rely in the web proxys ability to cache relevant static resources.
+\item[a:] In the current implementation of this system we cannot use the web proxy for load balancing, and thus the difference that any client would experience would lie in the web proxies ability to cache relevant static resources.
 \item[b:] Yes. If the web proxies were used to cache simple get requests or static replys, the clients would be able to continue to request these in spite of the backend server being down. However, they would not be able to modify anything or look up non-cached resources.
 \item[c:] Web caching would make things more difficult, as we would need to keep track of when the cached data becomes invalidated and must be deleted or recached.
 \end{description}
