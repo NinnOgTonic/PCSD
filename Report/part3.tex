@@ -1,20 +1,33 @@
 \chapter{Discussion on Architecture}
 
 \section{Modularity of architecture}
-(a) The architecture is strongly modular in the sense that different aspects of it are completely modularised and separated into different http services. (b) If the client service crashes, the stock manager service is unaffected and keeps running smoothly, and vice versa. (c) If all services are run locally in the same JVM, they will not have the same isolation. If the JVM crashes, everything crashes.
+\begin{description}
+\item[a:] The architecture is strongly modular in the sense that different aspects of it are completely modularised and separated into different http services.
+\item[b:] If the client service crashes, the stock manager service is unaffected and keeps running smoothly, and vice versa.
+\item[c:] If all services are run locally in the same JVM, they will not have the same isolation. If the JVM crashes, everything crashes.
+\end{description}
 
 \section{Naming}
-(a) There are multiple naming services in the architecture. There is port naming, books have ISBN namings, and RPC uses enums to identify the desired functions to be executed. Furthermore these RPC calls specify the privilege levels of the client using a naming scheme that pre-fixes the path in the PRC. (b) Hostnames/domain names are also used to name the services to communicate with.
+\begin{description}
+\item[a:] There are multiple naming services in the architecture. There is port naming, books have ISBN namings, and RPC uses enums to identify the desired functions to be executed. Furthermore these RPC calls specify the privilege levels of the client using a naming scheme that pre-fixes the path in the PRC.
+\item[b:] Hostnames/domain names are also used to name the services to communicate with.
+\end{description}
 
 \section{RPC semantics used}
 The architecture implements exactly-once RPC semantics, since each request is fulfilled exactly once. For instance, when buying a book, if it is in stock you will get one, but if it is not, it will be ordered once.
 
 \section{Proxy Servers}
-(a) It is safe to use proxy servers with the architecture of Figure 2, since there is only one back-end server, and thus no possibility of race conditions arising. (b) We would put them in front of the BookStoreHTTPServer. They would have no effect, however, again since there are not multiple back-end servers to scale against.
+\begin{description}
+\item[a:] It is safe to use proxy servers with the architecture of Figure 2, since there is only one back-end server, and thus no possibility of race conditions arising.
+\item[b:] We would put them in front of the BookStoreHTTPServer. They would have no effect, however, again since there are not multiple back-end servers to scale against.
+\end{description}
 
 \section{Bottlenecks}
-(a) As mentioned above, the single back-end server is a bottleneck with respect to the number of clients.
+As mentioned above, the single back-end server is a bottleneck with respect to the number of clients.
 
 \section{Effects of server crash}
-(a) If the web proxies were to cache get requests, the clients would be able to continue to request these in spite of the server being down. However, they would not be able to modify anything or look up non-cached items. (b) Yes. (c) Web caching would make things more difficult, as we would need to keep track of when the cached data becomes invalidated and must be updated or deleted.
-
+\begin{description}
+\item[a:] If the web proxies were to cache get requests, the clients would be able to continue to request these in spite of the server being down. However, they would not be able to modify anything or look up non-cached items.
+\item[b:] Yes.
+\item[c:] Web caching would make things more difficult, as we would need to keep track of when the cached data becomes invalidated and must be updated or deleted.
+\end{description}
