@@ -130,7 +130,7 @@ public class StockManagerHTTPProxy implements StockManager {
 
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
     public List<StockBook> getBooksInDemand() throws BookStoreException {
         ContentExchange exchange = new ContentExchange();
         String urlString = serverAddress + "/" + BookStoreMessageTag.INDEMAND;
