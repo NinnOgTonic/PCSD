@@ -132,7 +132,13 @@ public class StockManagerHTTPProxy implements StockManager {
 
     @Override
     public List<StockBook> getBooksInDemand() throws BookStoreException {
-        throw new BookStoreException("Not implemented");
+        ContentExchange exchange = new ContentExchange();
+        String urlString = serverAddress + "/" + BookStoreMessageTag.INDEMAND;
+
+        exchange.setURL(urlString);
+
+        return (List<StockBook>) BookStoreUtility.SendAndRecv(this.client,
+                                                              exchange);
     }
 
     public void removeAllBooks() throws BookStoreException {
