@@ -438,6 +438,59 @@ public class StockManagerTest {
         assertTrue(booksInStoreList.size() == 0);
     }
 
+    /**
+     * Tests basic getBooksByISBN for the default book
+     */
+
+    /**
+     * Tests basic getBooksByISBN for the default book
+     */
+    @Test
+    public void testGetBooksInDemand() throws BookStoreException {
+
+        List<StockBook> beforeInDemand = storeManager.getBooksInDemand();
+
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+        ImmutableStockBook book = new ImmutableStockBook(TEST_ISBN + 1,
+                                              "Java is crap",
+                                              "Jonas H.", (float) 50, NUM_COPIES,
+                                              0, 0, 0, false);
+        booksToAdd.add(book);
+        storeManager.addBooks(booksToAdd);
+
+        // Set of books to buy
+        Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
+        booksToBuy.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
+
+        // Try to buy books
+        client.buyBooks(booksToBuy);
+
+        try{
+
+            Set<BookCopy> booksToBuy2 = new HashSet<BookCopy>();
+            booksToBuy2.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
+
+            // Try to buy books
+            client.buyBooks(booksToBuy2);
+        } catch(Exception e){
+            List<StockBook> afterInDemand = storeManager.getBooksInDemand();
+
+
+            Boolean foundOurBook = false;
+
+            for (Book bookInDemand : afterInDemand) {
+                if(bookInDemand.getISBN() == TEST_ISBN + 1){
+                    foundOurBook = true;
+                    break;
+                }
+            }
+
+            assertTrue(beforeInDemand.size() + 1 == afterInDemand.size());
+            assertTrue(foundOurBook == true);
+        }
+    }
+
+
     @AfterClass
     public static void tearDownAfterClass() throws BookStoreException {
         storeManager.removeAllBooks();

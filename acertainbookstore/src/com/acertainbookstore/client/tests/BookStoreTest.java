@@ -313,6 +313,31 @@ public class BookStoreTest {
 
     }
 
+    /**
+     * Tests that we can rate a book
+     */
+    @Test
+    public void testRateBooks() throws BookStoreException {
+        Set<StockBook> booksAdded = new HashSet<StockBook>();
+        booksAdded.add(getDefaultBook());
+
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 3,
+                                              "The Java Language is Litteraly Hitler",
+                                              "Python is Way Better", (float) 123, NUM_COPIES,
+                                              0, 0, 0, false));
+
+        booksAdded.addAll(booksToAdd);
+
+        storeManager.addBooks(booksToAdd);
+
+        // Get books in store
+        List<StockBook> listBooks = storeManager.getBooks();
+
+        // Make sure the lists equal each other
+        assertTrue(listBooks.containsAll(booksAdded)
+                   && listBooks.size() == booksAdded.size());
+    }
     @AfterClass
     public static void tearDownAfterClass() throws BookStoreException {
         storeManager.removeAllBooks();
