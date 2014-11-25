@@ -184,7 +184,7 @@ public class BookStoreBook extends ImmutableBook {
     public String toString() {
         String bookString = "ISBN = " + this.getISBN() + ", Title = "
             + this.getTitle() + ", Author = " + this.getAuthor()
-            + ", Price = " + this.getPrice();
+            + ", Price = " + this.getPrice() + ", Rating = " + this.getAverageRating();
         return bookString;
     }
 

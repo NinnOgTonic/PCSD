@@ -301,18 +301,21 @@ public class CertainBookStore implements BookStore, StockManager {
                 public int compare(BookStoreBook b1, BookStoreBook b2) {
                     float f1 = b1.getAverageRating();
                     float f2 = b2.getAverageRating();
-                    if      (f1  < f2) return -1;
+                    if      (f1  > f2) return -1;
                     else if (f1 == f2) return  0;
                     else               return  1;
                 }
             });
+        for(BookStoreBook currBook : tmp) {
+            if(currBook.getAverageRating() == -1){
+                continue;
+            }
 
-        for(BookStoreBook book : tmp) {
             if (result.size() >= numBooks) {
                 break;
             }
 
-            result.add(book.immutableBook());
+            result.add(currBook.immutableBook());
         }
         return result;
     }

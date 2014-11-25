@@ -400,6 +400,53 @@ public class BookStoreTest {
         }
     }
 
+
+    /**
+     * Tests that get toprated books works.
+     */
+    @Test
+    public void testGetTopRatedBooks() throws BookStoreException {
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+        Integer highestISBN = 0;
+        Integer highestRating = 0;
+
+        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 4,
+                                              "This Java Stuff is Litteraly Hitler",
+                                              "The Inglourious Basterds", (float) 300,
+                                              NUM_COPIES, 0, 1, 1, false));
+        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 5,
+                                              "Polio Came from Java",
+                                              "Syrian Health Ministry", (float) 300,
+                                              NUM_COPIES, 0, 1, 2, false));
+
+        storeManager.addBooks(booksToAdd);
+
+        List<Book> topRatedBefore = client.getTopRatedBooks(2);
+
+        Book topRatedBookBefore = topRatedBefore.get(0);
+
+        Set<Integer>booksToGet = new HashSet<Integer>();
+        booksToGet.add(TEST_ISBN + 5);
+
+        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+        StockBook bookBefore = listBooks.get(0);
+
+       assertTrue(topRatedBookBefore.getISBN() == (TEST_ISBN + 5));
+
+        // Try to upvote this book and see if we become #1 with our lowest rated test book.
+        Set<BookRating>bookRatings = new HashSet<BookRating>();
+        bookRatings.add(new BookRating(TEST_ISBN + 4, 5));
+        client.rateBooks(bookRatings);
+
+        List<Book> topRatedAfter = client.getTopRatedBooks(2);
+
+        Book topRatedBookAfter = topRatedAfter.get(0);
+
+        assertTrue(topRatedBookAfter.getISBN() == TEST_ISBN + 4);
+
+
+    }
+
     @AfterClass
     public static void tearDownAfterClass() throws BookStoreException {
         storeManager.removeAllBooks();
