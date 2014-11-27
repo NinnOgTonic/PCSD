@@ -1,0 +1,11 @@
+\chapter{Techniques for Performance}
+\section{Influence of Concurrency}
+Usually the impacts of concurrency are positive in terms of reducing the overall performance of a system, I.e. if we need to parse something, and one core can parse one file each second, but we have more than one core available, thus we can increase the throughput to scale with the number of cores which is positive.\n
+If we then look at the other components required in this operation, we realise that we might also depend on the IO bandwidth to read the files and serve them to the core. Thus if we can only read 2 files each second and we have 32 cores each trying to read, we might end up spending a lot more time idling and switching contexts due to starvation which will lead to a less than optimal throughput, thus being a negative aspect of concurrency.
+
+\section{Dallying vs Batching}
+An example of \texttt{batching} might be \texttt{coalesced memory access} which when requesting a memory area will then transfer the entire near by memory area into the cache.\n
+An example of \texttt{dallying} might be the implementation of \texttt{stdout} buffer where we wait for number of bytes (or a newline) before the text is printed.
+
+\section{Is Caching Fast Path Optimisation}
+Yes it is. By implementing caching we implement two execution paths, the cache hit path and the cache miss path. Each path preform an explicitly different set of operations, thus the things we have cached, is a fast path execution path as it is optimised to contain and return previously used memory, which is where we will find common memory requests often.
