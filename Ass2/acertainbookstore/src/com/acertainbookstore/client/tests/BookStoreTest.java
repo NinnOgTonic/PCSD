@@ -448,6 +448,61 @@ public class BookStoreTest {
 
     // }
 
+    /**
+     * Test0: Tests for race condition via addAndBuyBooksConcurrently() functionality
+     */
+    @Test
+    public void testConcurrentBuy() throws BookStoreException {
+
+        // Set of books to buy
+        final int copies = 500;
+        final int isbn = TEST_ISBN + 10;
+        final int threads = 1000;
+        final int threadBlockSize = 5;
+
+
+        Thread[] threadsArr = new Thread[threads];
+
+        // First add the book:
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+        StockBook book = new ImmutableStockBook(isbn, "Test of The Blad",
+                                                "George RR Testin'", (float) 10, threadBlockSize * copies * threads, 0, 0, 0, false);
+        booksToAdd.add(book);
+        storeManager.addBooks(booksToAdd);
+
+
+        // Next try to create a race condition:
+        for(int j = 0; j < threads; j++){
+            threadsArr[j] = new Thread(new Runnable() { public void run() {
+                for(int i = 0; i < threadBlockSize; i++){
+                    Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
+                    booksToBuy.add(new BookCopy(isbn, copies));
+                    try{
+                        // Try to buy books
+                        client.buyBooks(booksToBuy);
+                    } catch (Exception e){
+                        fail();
+                    }
+                }
+            }});
+            threadsArr[j].start();
+        }
+
+        try{
+            // Wait till they finish
+            for(int j = 0; j < threads; j++){
+                threadsArr[j].join();
+            }
+        } catch(Exception e){
+            fail();
+        }
+
+        Set<Integer> booksToCheck = new HashSet<Integer>();
+        booksToCheck.add(isbn);
+        List<StockBook> books = storeManager.getBooksByISBN(booksToCheck);
+
+        assertTrue(books.get(0).getNumCopies() == 0);
+    }
 
     /**
      * Test1: Tests for race condition via addAndBuyBooksConcurrently() functionality
