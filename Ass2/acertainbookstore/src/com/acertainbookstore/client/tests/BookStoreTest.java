@@ -572,6 +572,7 @@ public class BookStoreTest {
     @Test
     public void testConcurrentAddAndBuyBookCount() throws BookStoreException {
         final int copies = 500;
+        final int[] errors = new int[1];
         storeManager.removeAllBooks();
         final Set<BookCopy> bookSet = new HashSet<BookCopy>();
 
@@ -598,9 +599,13 @@ public class BookStoreTest {
                                 for(StockBook book : books) {
                                     if(count == -1) {
                                         count = book.getNumCopies();
-                                        assertTrue(book.getNumCopies() - copies + 1 <= 1);
+                                        if(!(book.getNumCopies() - copies + 1 <= 1)) {
+                                            errors[0] = 1;
+                                        }
                                     } else {
-                                        assertTrue(book.getNumCopies() == count);
+                                        if(!(book.getNumCopies() == count)) {
+                                            errors[0] = 1;
+                                        }
                                     }
                                 }
                             } catch(Exception e) {
@@ -619,6 +624,8 @@ public class BookStoreTest {
         } catch(Exception e){
             fail();
         }
+
+        assertTrue(errors[0] == 0);
 
     }
 
