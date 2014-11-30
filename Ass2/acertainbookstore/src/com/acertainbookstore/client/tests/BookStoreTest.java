@@ -517,7 +517,7 @@ public class BookStoreTest {
     }
 
     /**
-     * Test2: Tests for race condition and locking via checkAddAndBuyBookCountConcurrently() functionality
+     * Test2: Tests race-conditions/locking functionality
      */
     @Test
     public void testConcurrentAddAndBuyBookCount() throws BookStoreException {
@@ -564,6 +564,56 @@ public class BookStoreTest {
             fail();
         }
 
+    }
+
+    /**
+     * Test3: Tests race-conditions by buying too many books and counting how often it failed
+     */
+    @Test
+    public void testBuyTooManyBooksConcurrently() throws BookStoreException {
+        int copies = 175;
+        int numThreads = 200;
+        final int[] errors = new int[numThreads];
+        Set<Integer> isbns = new HashSet<Integer>();
+
+        addBooks(TEST_ISBN + 1, copies);
+
+        final HashSet<BookCopy> books = new HashSet<BookCopy>();
+        books.add(new BookCopy(TEST_ISBN + 1, 1));
+
+        List<Thread> threads;// = new List<Thread>();
+
+        for(int j = 0; j < numThreads; j++) {
+            threads.add(new Thread(new Runnable() { public void run() {
+                try{
+                    errors.get(j) = 0;
+                    client.buyBooks(books);
+                } catch(Exception e){
+                    errors.get(j) = 1;
+                }
+            }}));
+        }
+
+        try{
+            for(int i = 0; i < numThreads; i++) {
+                // Start the threads
+                threads.get(i).start();
+            }
+
+            for(int i = 0; i < numThreads; i++) {
+                // Wait till they finish
+                threads.get(i).join();
+            }
+        } catch(Exception e){
+            fail();
+        }
+
+        int errorCount = 0;
+        for(int i = 0; i < numThreads; i++)
+            errorCount += errors[i];
+
+
+        assertTrue(errorCount == 25);
     }
 
     @AfterClass
