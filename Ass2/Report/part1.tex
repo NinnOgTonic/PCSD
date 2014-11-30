@@ -5,9 +5,19 @@
 \subsection{Serialisability}
 Schedule 1 is cyclic and is therefore not conflict-serialisable. Schedule 2 is acyclic and is therefore conflict-serialisable.
 
-The precedence graphs of schedules 1 and 2 can be seen in Figure \ref{precedencegraphs}.
+The precedence graphs of schedules 1 and 2 can be seen in Figures \ref{precedencegraph1} and \ref{precedencegraph2}.
 
-% figure "precedencegraphs" goes here
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{schedule1.png}
+    \caption{Precedence graph of schedule1 \label{precedencegraph1}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{schedule2.png}
+    \caption{Precedence graph of schedule2 \label{precedencegraph2}}
+\end{figure}
 
 \subsection{Locking}
 
