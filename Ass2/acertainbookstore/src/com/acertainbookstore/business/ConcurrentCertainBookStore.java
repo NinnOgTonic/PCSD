@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.acertainbookstore.interfaces.BookStore;
 import com.acertainbookstore.interfaces.StockManager;
@@ -32,6 +33,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
     public ConcurrentCertainBookStore() {
         // Constructors are not synchronized
         bookMap = new HashMap<Integer, BookStoreBook>();
+        loldongs = new ReentrantReadWriteLock(true);
     }
 
     public void addBooks(Set<StockBook> bookSet)
