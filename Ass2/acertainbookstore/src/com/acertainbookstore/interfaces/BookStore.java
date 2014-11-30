@@ -33,8 +33,7 @@ public interface BookStore {
      * @return
      * @throws BookStoreException
      */
-    public void rateBooks(Set<BookRating> bookRating)
-        throws BookStoreException;
+    //public void rateBooks(Set<BookRating> bookRating) throws BookStoreException;
 
     /**
      * Returns the list of books corresponding to the set of ISBNs
@@ -54,7 +53,7 @@ public interface BookStore {
      * @return
      * @throws BookStoreException
      */
-    public List<Book> getTopRatedBooks(int numBooks) throws BookStoreException;
+   // public List<Book> getTopRatedBooks(int numBooks) throws BookStoreException;
 
     /**
      * Returns the list of books containing numBooks editor picks

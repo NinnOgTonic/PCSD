@@ -130,16 +130,16 @@ public class StockManagerHTTPProxy implements StockManager {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public List<StockBook> getBooksInDemand() throws BookStoreException {
-        ContentExchange exchange = new ContentExchange();
-        String urlString = serverAddress + "/" + BookStoreMessageTag.INDEMAND;
+    // @SuppressWarnings("unchecked")
+    // public List<StockBook> getBooksInDemand() throws BookStoreException {
+    //     ContentExchange exchange = new ContentExchange();
+    //     String urlString = serverAddress + "/" + BookStoreMessageTag.INDEMAND;
 
-        exchange.setURL(urlString);
+    //     exchange.setURL(urlString);
 
-        return (List<StockBook>) BookStoreUtility.SendAndRecv(this.client,
-                                                              exchange);
-    }
+    //     return (List<StockBook>) BookStoreUtility.SendAndRecv(this.client,
+    //                                                           exchange);
+    // }
 
     public void removeAllBooks() throws BookStoreException {
         ContentExchange exchange = new ContentExchange();

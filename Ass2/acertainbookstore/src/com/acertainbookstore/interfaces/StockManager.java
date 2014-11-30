@@ -61,7 +61,7 @@ public interface StockManager {
      * @return
      * @throws BookStoreException
      */
-    public List<StockBook> getBooksInDemand() throws BookStoreException;
+    //public List<StockBook> getBooksInDemand() throws BookStoreException;
 
     /**
      * Books are marked/unmarked as an editor pick

@@ -275,23 +275,23 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
 	}
 
-	@Override
-	public List<Book> getTopRatedBooks(int numBooks)
-			throws BookStoreException {
-		throw new BookStoreException("Not implemented");
-	}
+	// @Override
+	// public List<Book> getTopRatedBooks(int numBooks)
+	// 		throws BookStoreException {
+	// 	throw new BookStoreException("Not implemented");
+	// }
 
-	@Override
-	public List<StockBook> getBooksInDemand()
-			throws BookStoreException {
-		throw new BookStoreException("Not implemented");
-	}
+	// @Override
+	// public List<StockBook> getBooksInDemand()
+	// 		throws BookStoreException {
+	// 	throw new BookStoreException("Not implemented");
+	// }
 
-	@Override
-	public void rateBooks(Set<BookRating> bookRating)
-			throws BookStoreException {
-		throw new BookStoreException("Not implemented");
-	}
+	// @Override
+	// public void rateBooks(Set<BookRating> bookRating)
+	// 		throws BookStoreException {
+	// 	throw new BookStoreException("Not implemented");
+	// }
 
 	public void removeAllBooks() throws BookStoreException {
 		bookMap.clear();

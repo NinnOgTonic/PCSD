@@ -128,40 +128,40 @@ public class BookStoreHTTPProxy implements BookStore {
         }
     }
 
-    @Override
-    public void rateBooks(Set<BookRating> bookRating) throws BookStoreException {
-        ContentExchange exchange = new ContentExchange();
-        String urlString = serverAddress + "/" + BookStoreMessageTag.RATEBOOKS;
+    // @Override
+    // public void rateBooks(Set<BookRating> bookRating) throws BookStoreException {
+    //     ContentExchange exchange = new ContentExchange();
+    //     String urlString = serverAddress + "/" + BookStoreMessageTag.RATEBOOKS;
 
-        String listISBNsxmlString = BookStoreUtility
-            .serializeObjectToXMLString(bookRating);
-        exchange.setMethod("POST");
-        exchange.setURL(urlString);
-        Buffer requestContent = new ByteArrayBuffer(listISBNsxmlString);
-        exchange.setRequestContent(requestContent);
+    //     String listISBNsxmlString = BookStoreUtility
+    //         .serializeObjectToXMLString(bookRating);
+    //     exchange.setMethod("POST");
+    //     exchange.setURL(urlString);
+    //     Buffer requestContent = new ByteArrayBuffer(listISBNsxmlString);
+    //     exchange.setRequestContent(requestContent);
 
-        BookStoreUtility.SendAndRecv(this.client, exchange);
-    }
+    //     BookStoreUtility.SendAndRecv(this.client, exchange);
+    // }
 
-    @SuppressWarnings("unchecked")
-    public List<Book> getTopRatedBooks(int numBooks) throws BookStoreException {
-        ContentExchange exchange = new ContentExchange();
-        String urlEncodedNumBooks = null;
+    // @SuppressWarnings("unchecked")
+    // public List<Book> getTopRatedBooks(int numBooks) throws BookStoreException {
+    //     ContentExchange exchange = new ContentExchange();
+    //     String urlEncodedNumBooks = null;
 
-        try {
-            urlEncodedNumBooks = URLEncoder.encode(Integer.toString(numBooks),
-                                                   "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            throw new BookStoreException("unsupported encoding of numbooks", ex);
-        }
+    //     try {
+    //         urlEncodedNumBooks = URLEncoder.encode(Integer.toString(numBooks),
+    //                                                "UTF-8");
+    //     } catch (UnsupportedEncodingException ex) {
+    //         throw new BookStoreException("unsupported encoding of numbooks", ex);
+    //     }
 
-        String urlString = serverAddress + "/"
-            + BookStoreMessageTag.TOPRATED + "?"
-            + BookStoreConstants.BOOK_NUM_PARAM + "=" + urlEncodedNumBooks;
+    //     String urlString = serverAddress + "/"
+    //         + BookStoreMessageTag.TOPRATED + "?"
+    //         + BookStoreConstants.BOOK_NUM_PARAM + "=" + urlEncodedNumBooks;
 
-        exchange.setURL(urlString);
+    //     exchange.setURL(urlString);
 
-        return (List<Book>) BookStoreUtility.SendAndRecv(this.client, exchange);
-    }
+    //     return (List<Book>) BookStoreUtility.SendAndRecv(this.client, exchange);
+    // }
 
 }

@@ -282,102 +282,102 @@ public class CertainBookStore implements BookStore, StockManager {
 
     }
 
-    @Override
-    public synchronized List<Book> getTopRatedBooks(int numBooks)
-        throws BookStoreException {
+    // @Override
+    // public synchronized List<Book> getTopRatedBooks(int numBooks)
+    //     throws BookStoreException {
 
-        if (numBooks < 0) {
-            throw new BookStoreException("numBooks = " + numBooks
-                                         + ", but it must be positive");
-        }
+    //     if (numBooks < 0) {
+    //         throw new BookStoreException("numBooks = " + numBooks
+    //                                      + ", but it must be positive");
+    //     }
 
-        List<Book> result = new ArrayList<Book>();
-        List<BookStoreBook> tmp = new ArrayList<BookStoreBook>();
-        tmp.addAll(bookMap.values());
-        Collections.sort
-            (tmp,
-             new Comparator<BookStoreBook>() {
-                @Override
-                public int compare(BookStoreBook b1, BookStoreBook b2) {
-                    float f1 = b1.getAverageRating();
-                    float f2 = b2.getAverageRating();
-                    if      (f1  > f2) return -1;
-                    else if (f1 == f2) return  0;
-                    else               return  1;
-                }
-            });
-        for(BookStoreBook currBook : tmp) {
-            if(currBook.getAverageRating() == -1){
-                continue;
-            }
+    //     List<Book> result = new ArrayList<Book>();
+    //     List<BookStoreBook> tmp = new ArrayList<BookStoreBook>();
+    //     tmp.addAll(bookMap.values());
+    //     Collections.sort
+    //         (tmp,
+    //          new Comparator<BookStoreBook>() {
+    //             @Override
+    //             public int compare(BookStoreBook b1, BookStoreBook b2) {
+    //                 float f1 = b1.getAverageRating();
+    //                 float f2 = b2.getAverageRating();
+    //                 if      (f1  > f2) return -1;
+    //                 else if (f1 == f2) return  0;
+    //                 else               return  1;
+    //             }
+    //         });
+    //     for(BookStoreBook currBook : tmp) {
+    //         if(currBook.getAverageRating() == -1){
+    //             continue;
+    //         }
 
-            if (result.size() >= numBooks) {
-                break;
-            }
+    //         if (result.size() >= numBooks) {
+    //             break;
+    //         }
 
-            result.add(currBook.immutableBook());
-        }
-        return result;
-    }
+    //         result.add(currBook.immutableBook());
+    //     }
+    //     return result;
+    // }
 
-    @Override
-    public synchronized List<StockBook> getBooksInDemand()
-        throws BookStoreException {
-        /* Equivalent python (without the bug):
-           def getEditorPicks
-           l = [b for b in all_books() if b.is_editor_pick()]
-           return random.sample(l, min(numBooks, len(l)))
-        */
+    // @Override
+    // public synchronized List<StockBook> getBooksInDemand()
+    //     throws BookStoreException {
+    //     /* Equivalent python (without the bug):
+    //        def getEditorPicks
+    //        l = [b for b in all_books() if b.is_editor_pick()]
+    //        return random.sample(l, min(numBooks, len(l)))
+    //     */
 
-        List<StockBook> result = new ArrayList<StockBook>();
-        Iterator<Entry<Integer, BookStoreBook>> it = bookMap.entrySet()
-            .iterator();
-        BookStoreBook book;
+    //     List<StockBook> result = new ArrayList<StockBook>();
+    //     Iterator<Entry<Integer, BookStoreBook>> it = bookMap.entrySet()
+    //         .iterator();
+    //     BookStoreBook book;
 
-        // Get all books that are editor picks
-        while (it.hasNext()) {
-            Entry<Integer, BookStoreBook> pair = (Entry<Integer, BookStoreBook>) it
-                .next();
-            book = (BookStoreBook) pair.getValue();
-            if (book.getSaleMisses() > 0) {
-                result.add(book.immutableStockBook());
-            }
-        }
+    //     // Get all books that are editor picks
+    //     while (it.hasNext()) {
+    //         Entry<Integer, BookStoreBook> pair = (Entry<Integer, BookStoreBook>) it
+    //             .next();
+    //         book = (BookStoreBook) pair.getValue();
+    //         if (book.getSaleMisses() > 0) {
+    //             result.add(book.immutableStockBook());
+    //         }
+    //     }
 
-        return result;
-    }
+    //     return result;
+    // }
 
-    @Override
-    public synchronized void rateBooks(Set<BookRating> bookRating)
-        throws BookStoreException {
-        if (bookRating == null) {
-            throw new BookStoreException(BookStoreConstants.NULL_INPUT);
-        }
+    // @Override
+    // public synchronized void rateBooks(Set<BookRating> bookRating)
+    //     throws BookStoreException {
+    //     if (bookRating == null) {
+    //         throw new BookStoreException(BookStoreConstants.NULL_INPUT);
+    //     }
 
-        // Check that all ISBNs that we buy are there first.
-        int ISBN;
-        int rating;
-        BookStoreBook book;
-        Boolean saleMiss = false;
-        for (BookRating bookToRate : bookRating) {
-            ISBN = bookToRate.getISBN();
-            rating = bookToRate.getRating();
-            if (BookStoreUtility.isInvalidRating(rating))
-                throw new BookStoreException(BookStoreConstants.RATING
-                                             + rating
-                                             + BookStoreConstants.INVALID);
-            if (BookStoreUtility.isInvalidISBN(ISBN))
-                throw new BookStoreException(BookStoreConstants.ISBN + ISBN
-                                             + BookStoreConstants.INVALID);
-            if (!bookMap.containsKey(ISBN))
-                throw new BookStoreException(BookStoreConstants.ISBN + ISBN
-                                             + BookStoreConstants.NOT_AVAILABLE);
-            book = bookMap.get(ISBN);
-            book.addRating(rating);
-        }
+    //     // Check that all ISBNs that we buy are there first.
+    //     int ISBN;
+    //     int rating;
+    //     BookStoreBook book;
+    //     Boolean saleMiss = false;
+    //     for (BookRating bookToRate : bookRating) {
+    //         ISBN = bookToRate.getISBN();
+    //         rating = bookToRate.getRating();
+    //         if (BookStoreUtility.isInvalidRating(rating))
+    //             throw new BookStoreException(BookStoreConstants.RATING
+    //                                          + rating
+    //                                          + BookStoreConstants.INVALID);
+    //         if (BookStoreUtility.isInvalidISBN(ISBN))
+    //             throw new BookStoreException(BookStoreConstants.ISBN + ISBN
+    //                                          + BookStoreConstants.INVALID);
+    //         if (!bookMap.containsKey(ISBN))
+    //             throw new BookStoreException(BookStoreConstants.ISBN + ISBN
+    //                                          + BookStoreConstants.NOT_AVAILABLE);
+    //         book = bookMap.get(ISBN);
+    //         book.addRating(rating);
+    //     }
 
-        return;
-    }
+    //     return;
+    // }
 
     public synchronized void removeAllBooks() throws BookStoreException {
         bookMap.clear();

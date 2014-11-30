@@ -314,138 +314,138 @@ public class BookStoreTest {
 
     }
 
-    /**
-     * Tests that a rating actually works.
-     */
-    @Test
-    public void testBookRating() throws BookStoreException {
+    // /**
+    //  * Tests that a rating actually works.
+    //  */
+    // @Test
+    // public void testBookRating() throws BookStoreException {
 
-        Set<Integer>booksToGet = new HashSet<Integer>();
-        booksToGet.add(TEST_ISBN);
+    //     Set<Integer>booksToGet = new HashSet<Integer>();
+    //     booksToGet.add(TEST_ISBN);
 
-        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookBefore = listBooks.get(0);
+    //     List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookBefore = listBooks.get(0);
 
-        Set<BookRating>bookRatings = new HashSet<BookRating>();
-        bookRatings.add(new BookRating(TEST_ISBN, 4));
-        client.rateBooks(bookRatings);
+    //     Set<BookRating>bookRatings = new HashSet<BookRating>();
+    //     bookRatings.add(new BookRating(TEST_ISBN, 4));
+    //     client.rateBooks(bookRatings);
 
-        List<StockBook> listBooks2 = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookAfter = listBooks2.get(0);
+    //     List<StockBook> listBooks2 = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookAfter = listBooks2.get(0);
 
-        assertTrue(bookAfter.getTotalRating() == bookBefore.getTotalRating() + 4);
-        assertTrue(bookAfter.getTimesRated()  == bookBefore.getTimesRated()  + 1);
-    }
+    //     assertTrue(bookAfter.getTotalRating() == bookBefore.getTotalRating() + 4);
+    //     assertTrue(bookAfter.getTimesRated()  == bookBefore.getTimesRated()  + 1);
+    // }
 
-    /**
-     * Tests that rating doesn't work on invalid ISBN's.
-     */
-    @Test
-    public void testBookRatingISBN() throws BookStoreException {
-        Set<Integer>booksToGet = new HashSet<Integer>();
-        booksToGet.add(TEST_ISBN);
+    // /**
+    //  * Tests that rating doesn't work on invalid ISBN's.
+    //  */
+    // @Test
+    // public void testBookRatingISBN() throws BookStoreException {
+    //     Set<Integer>booksToGet = new HashSet<Integer>();
+    //     booksToGet.add(TEST_ISBN);
 
-        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookBefore = listBooks.get(0);
+    //     List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookBefore = listBooks.get(0);
 
-        try {
-            Set<BookRating>bookRatings = new HashSet<BookRating>();
-            bookRatings.add(new BookRating(-1, 4));
-            client.rateBooks(bookRatings);
-            fail();
-        } catch (BookStoreException ex) {
-            ;
-        }
-    }
+    //     try {
+    //         Set<BookRating>bookRatings = new HashSet<BookRating>();
+    //         bookRatings.add(new BookRating(-1, 4));
+    //         client.rateBooks(bookRatings);
+    //         fail();
+    //     } catch (BookStoreException ex) {
+    //         ;
+    //     }
+    // }
 
-    /**
-     * Tests that rating doesn't work on invalid ratings.
-     */
-    @Test
-    public void testBookRatingFail() throws BookStoreException {
-        Set<Integer>booksToGet = new HashSet<Integer>();
-        booksToGet.add(TEST_ISBN);
+    // /**
+    //  * Tests that rating doesn't work on invalid ratings.
+    //  */
+    // @Test
+    // public void testBookRatingFail() throws BookStoreException {
+    //     Set<Integer>booksToGet = new HashSet<Integer>();
+    //     booksToGet.add(TEST_ISBN);
 
-        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookBefore = listBooks.get(0);
+    //     List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookBefore = listBooks.get(0);
 
-        try {
-            Set<BookRating>bookRatings = new HashSet<BookRating>();
-            bookRatings.add(new BookRating(TEST_ISBN, -1));
-            client.rateBooks(bookRatings);
-            fail();
-        } catch (BookStoreException ex) {
-            ;
-        }
-    }
+    //     try {
+    //         Set<BookRating>bookRatings = new HashSet<BookRating>();
+    //         bookRatings.add(new BookRating(TEST_ISBN, -1));
+    //         client.rateBooks(bookRatings);
+    //         fail();
+    //     } catch (BookStoreException ex) {
+    //         ;
+    //     }
+    // }
 
-    /**
-     * Tests that rating doesn't work on valid ISBN's that are not in the book store.
-     */
-    @Test
-    public void testBookRatingISBNNotFound() throws BookStoreException {
-        Set<Integer>booksToGet = new HashSet<Integer>();
-        booksToGet.add(TEST_ISBN);
+    // /**
+    //  * Tests that rating doesn't work on valid ISBN's that are not in the book store.
+    //  */
+    // @Test
+    // public void testBookRatingISBNNotFound() throws BookStoreException {
+    //     Set<Integer>booksToGet = new HashSet<Integer>();
+    //     booksToGet.add(TEST_ISBN);
 
-        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookBefore = listBooks.get(0);
+    //     List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookBefore = listBooks.get(0);
 
-        try {
-            Set<BookRating>bookRatings = new HashSet<BookRating>();
-            bookRatings.add(new BookRating(TEST_ISBN + 1, 1));
-            client.rateBooks(bookRatings);
-            fail();
-        } catch (BookStoreException ex) {
-            ;
-        }
-    }
-
-
-    /**
-     * Tests that get toprated books works.
-     */
-    @Test
-    public void testGetTopRatedBooks() throws BookStoreException {
-        Set<StockBook> booksToAdd = new HashSet<StockBook>();
-        Integer highestISBN = 0;
-        Integer highestRating = 0;
-
-        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 4,
-                                              "This Java Stuff is Litteraly Hitler",
-                                              "The Inglourious Basterds", (float) 300,
-                                              NUM_COPIES, 0, 1, 1, false));
-        booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 5,
-                                              "Polio Came from Java",
-                                              "Syrian Health Ministry", (float) 300,
-                                              NUM_COPIES, 0, 1, 2, false));
-
-        storeManager.addBooks(booksToAdd);
-
-        List<Book> topRatedBefore = client.getTopRatedBooks(2);
-
-        Book topRatedBookBefore = topRatedBefore.get(0);
-
-        Set<Integer>booksToGet = new HashSet<Integer>();
-        booksToGet.add(TEST_ISBN + 5);
-
-        List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
-        StockBook bookBefore = listBooks.get(0);
-
-       assertTrue(topRatedBookBefore.getISBN() == (TEST_ISBN + 5));
-
-        // Try to upvote this book and see if we become #1 with our lowest rated test book.
-        Set<BookRating>bookRatings = new HashSet<BookRating>();
-        bookRatings.add(new BookRating(TEST_ISBN + 4, 5));
-        client.rateBooks(bookRatings);
-
-        List<Book> topRatedAfter = client.getTopRatedBooks(2);
-
-        Book topRatedBookAfter = topRatedAfter.get(0);
-
-        assertTrue(topRatedBookAfter.getISBN() == TEST_ISBN + 4);
+    //     try {
+    //         Set<BookRating>bookRatings = new HashSet<BookRating>();
+    //         bookRatings.add(new BookRating(TEST_ISBN + 1, 1));
+    //         client.rateBooks(bookRatings);
+    //         fail();
+    //     } catch (BookStoreException ex) {
+    //         ;
+    //     }
+    // }
 
 
-    }
+    // /**
+    //  * Tests that get toprated books works.
+    //  */
+    // @Test
+    // public void testGetTopRatedBooks() throws BookStoreException {
+    //     Set<StockBook> booksToAdd = new HashSet<StockBook>();
+    //     Integer highestISBN = 0;
+    //     Integer highestRating = 0;
+
+    //     booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 4,
+    //                                           "This Java Stuff is Litteraly Hitler",
+    //                                           "The Inglourious Basterds", (float) 300,
+    //                                           NUM_COPIES, 0, 1, 1, false));
+    //     booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 5,
+    //                                           "Polio Came from Java",
+    //                                           "Syrian Health Ministry", (float) 300,
+    //                                           NUM_COPIES, 0, 1, 2, false));
+
+    //     storeManager.addBooks(booksToAdd);
+
+    //     List<Book> topRatedBefore = client.getTopRatedBooks(2);
+
+    //     Book topRatedBookBefore = topRatedBefore.get(0);
+
+    //     Set<Integer>booksToGet = new HashSet<Integer>();
+    //     booksToGet.add(TEST_ISBN + 5);
+
+    //     List<StockBook> listBooks = storeManager.getBooksByISBN(booksToGet);
+    //     StockBook bookBefore = listBooks.get(0);
+
+    //    assertTrue(topRatedBookBefore.getISBN() == (TEST_ISBN + 5));
+
+    //     // Try to upvote this book and see if we become #1 with our lowest rated test book.
+    //     Set<BookRating>bookRatings = new HashSet<BookRating>();
+    //     bookRatings.add(new BookRating(TEST_ISBN + 4, 5));
+    //     client.rateBooks(bookRatings);
+
+    //     List<Book> topRatedAfter = client.getTopRatedBooks(2);
+
+    //     Book topRatedBookAfter = topRatedAfter.get(0);
+
+    //     assertTrue(topRatedBookAfter.getISBN() == TEST_ISBN + 4);
+
+
+    // }
 
     @AfterClass
     public static void tearDownAfterClass() throws BookStoreException {

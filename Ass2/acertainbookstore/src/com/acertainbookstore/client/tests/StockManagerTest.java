@@ -438,55 +438,55 @@ public class StockManagerTest {
         assertTrue(booksInStoreList.size() == 0);
     }
 
-    /**
-     * Tests basic getBooksInDemand
-     */
-    @Test
-    public void testGetBooksInDemand() throws BookStoreException {
+    // /**
+    //  * Tests basic getBooksInDemand
+    //  */
+    // @Test
+    // public void testGetBooksInDemand() throws BookStoreException {
 
-        List<StockBook> beforeInDemand = storeManager.getBooksInDemand();
+    //     List<StockBook> beforeInDemand = storeManager.getBooksInDemand();
 
-        Set<StockBook> booksToAdd = new HashSet<StockBook>();
-        ImmutableStockBook book = new ImmutableStockBook(TEST_ISBN + 1,
-                                                         "Java is crap",
-                                                         "Jonas H.", (float) 50, NUM_COPIES,
-                                                         0, 0, 0, false);
-        booksToAdd.add(book);
-        storeManager.addBooks(booksToAdd);
+    //     Set<StockBook> booksToAdd = new HashSet<StockBook>();
+    //     ImmutableStockBook book = new ImmutableStockBook(TEST_ISBN + 1,
+    //                                                      "Java is crap",
+    //                                                      "Jonas H.", (float) 50, NUM_COPIES,
+    //                                                      0, 0, 0, false);
+    //     booksToAdd.add(book);
+    //     storeManager.addBooks(booksToAdd);
 
-        // Set of books to buy
-        Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
-        booksToBuy.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
+    //     // Set of books to buy
+    //     Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
+    //     booksToBuy.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
 
-        // Try to buy books
-        client.buyBooks(booksToBuy);
+    //     // Try to buy books
+    //     client.buyBooks(booksToBuy);
 
-        try{
+    //     try{
 
-            Set<BookCopy> booksToBuy2 = new HashSet<BookCopy>();
-            booksToBuy2.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
+    //         Set<BookCopy> booksToBuy2 = new HashSet<BookCopy>();
+    //         booksToBuy2.add(new BookCopy(TEST_ISBN + 1, NUM_COPIES));
 
-            // Try to buy books
-            client.buyBooks(booksToBuy2);
-            fail();
-        } catch(BookStoreException e){
-            ;
-        }
+    //         // Try to buy books
+    //         client.buyBooks(booksToBuy2);
+    //         fail();
+    //     } catch(BookStoreException e){
+    //         ;
+    //     }
 
-        List<StockBook> afterInDemand = storeManager.getBooksInDemand();
+    //     List<StockBook> afterInDemand = storeManager.getBooksInDemand();
 
-        Boolean foundOurBook = false;
+    //     Boolean foundOurBook = false;
 
-        for (Book bookInDemand : afterInDemand) {
-            if(bookInDemand.getISBN() == TEST_ISBN + 1){
-                foundOurBook = true;
-                break;
-            }
-        }
+    //     for (Book bookInDemand : afterInDemand) {
+    //         if(bookInDemand.getISBN() == TEST_ISBN + 1){
+    //             foundOurBook = true;
+    //             break;
+    //         }
+    //     }
 
-        assertTrue(beforeInDemand.size() + 1 == afterInDemand.size());
-        assertTrue(foundOurBook == true);
-    }
+    //     assertTrue(beforeInDemand.size() + 1 == afterInDemand.size());
+    //     assertTrue(foundOurBook == true);
+    // }
 
 
     @AfterClass
