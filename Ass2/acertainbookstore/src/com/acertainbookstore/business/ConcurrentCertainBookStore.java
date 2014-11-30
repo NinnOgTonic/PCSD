@@ -195,19 +195,19 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             throw new BookStoreException(BookStoreConstants.NULL_INPUT);
         }
 
-    	List<BookEditorPick> sortedEditorPicks = new ArrayList<BookEditorPick>(editorPicks);
-		Collections.sort
-             (sortedEditorPicks,
-              new Comparator<BookEditorPick>() {
-                 @Override
-                 public int compare(BookEditorPick b1, BookEditorPick b2) {
-                     int f1 = b1.getISBN();
-                     int f2 = b2.getISBN();
-                     if      (f1  < f2) return -1;
-                     else if (f1 == f2) return  0;
-                     else               return  1;
-                 }
-             });
+        List<BookEditorPick> sortedEditorPicks = new ArrayList<BookEditorPick>(editorPicks);
+        Collections.sort
+            (sortedEditorPicks,
+             new Comparator<BookEditorPick>() {
+                @Override
+                    public int compare(BookEditorPick b1, BookEditorPick b2) {
+                    int f1 = b1.getISBN();
+                    int f2 = b2.getISBN();
+                    if      (f1  < f2) return -1;
+                    else if (f1 == f2) return  0;
+                    else               return  1;
+                }
+            });
 
 
         int ISBNVal;
@@ -216,7 +216,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         List<int> taken = new ArrayList<int>();
 
         try {
-            for (BookEditorPick editorPickArg : editorPicks) {
+            for (BookEditorPick editorPickArg : sortedEditorPicks) {
                 ISBNVal = editorPickArg.getISBN();
                 if (BookStoreUtility.isInvalidISBN(ISBNVal))
                     throw new BookStoreException(BookStoreConstants.ISBN + ISBNVal
@@ -226,7 +226,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                                                  + BookStoreConstants.NOT_AVAILABLE);
             }
 
-            for (BookEditorPick editorPickArg : editorPicks) {
+            for (BookEditorPick editorPickArg : sortedEditorPicks) {
                 Integer ISBN = editorPickArg.getISBN();
                 take_local(ISBN, true);
                 taken.add(ISBN);
@@ -252,11 +252,25 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         BookStoreBook book;
         Boolean saleMiss = false;
 
+        List<BookCopy> sortedBookCopiesToBuy = new ArrayList<BookCopy>(bookCopiesToBuy);
+        Collections.sort
+            (sortedBookCopiesToBuy,
+             new Comparator<BookCopy>() {
+                @Override
+                    public int compare(BookCopy b1, BookCopy b2) {
+                    int f1 = b1.getISBN();
+                    int f2 = b2.getISBN();
+                    if      (f1  < f2) return -1;
+                    else if (f1 == f2) return  0;
+                    else               return  1;
+                }
+            });
+
         take_global(true);
         List<int> taken = new ArrayList<int>();
 
         try {
-            for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
+            for (BookCopy bookCopyToBuy : sortedBookCopiesToBuy) {
                 ISBN = bookCopyToBuy.getISBN();
                 if (bookCopyToBuy.getNumCopies() < 0)
                     throw new BookStoreException(BookStoreConstants.NUM_COPIES
@@ -285,7 +299,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                                              + BookStoreConstants.NOT_AVAILABLE);
 
             // Then make purchase
-            for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
+            for (BookCopy bookCopyToBuy : sortedBookCopiesToBuy) {
                 book = bookMap.get(bookCopyToBuy.getISBN());
                 book.buyCopies(bookCopyToBuy.getNumCopies());
             }
@@ -301,12 +315,19 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
     public List<StockBook> getBooksByISBN(Set<Integer> isbnSet)
         throws BookStoreException {
+
+        if (isbnSet == null) {
+            throw new BookStoreException(BookStoreConstants.NULL_INPUT);
+        }
+
+
+        List<Integer> sortedIsbnSet = new ArrayList<Integer>(isbnSet);
+        sortedIsbnSet.sort();
+
         take_global(false);
+
         try {
-            if (isbnSet == null) {
-                throw new BookStoreException(BookStoreConstants.NULL_INPUT);
-            }
-            for (Integer ISBN : isbnSet) {
+            for (Integer ISBN : sortedIsbnSet) {
                 if (BookStoreUtility.isInvalidISBN(ISBN))
                     throw new BookStoreException(BookStoreConstants.ISBN + ISBN
                                                  + BookStoreConstants.INVALID);
@@ -334,11 +355,17 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
     public List<Book> getBooks(Set<Integer> isbnSet)
         throws BookStoreException {
+
+        if (isbnSet == null) {
+            throw new BookStoreException(BookStoreConstants.NULL_INPUT);
+        }
+
+        List<Integer> sortedIsbnSet = new ArrayList<Integer>(isbnSet);
+        sortedIsbnSet.sort();
+
         take_global(false);
+
         try {
-            if (isbnSet == null) {
-                throw new BookStoreException(BookStoreConstants.NULL_INPUT);
-            }
             // Check that all ISBNs that we rate are there first.
             for (Integer ISBN : isbnSet) {
                 if (BookStoreUtility.isInvalidISBN(ISBN))
@@ -377,8 +404,9 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
 
             List<Book> listEditorPicks = new ArrayList<Book>();
-            Collection<int> bookMapKeys = bookMap.keys();
+            List<int> bookMapKeys = bookMap.keys();
             List<int> toBeAdded = List<Integer>();
+            bookMapKeys.sort();
             for (int ISBN : bookMapValues) {
                 take_local(ISBN, false);
                 taken.add(ISBN);
