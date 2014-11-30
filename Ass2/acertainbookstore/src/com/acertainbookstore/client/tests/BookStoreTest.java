@@ -69,63 +69,6 @@ public class BookStoreTest {
         storeManager.addBooks(booksToAdd);
     }
 
-    /**
-     * Helper method to add some books concurrently
-     */
-    public int addAndBuyBooksConcurrently(final int isbn, final int copies) throws BookStoreException {
-
-        // First add the book:
-        Set<StockBook> booksToAdd = new HashSet<StockBook>();
-        StockBook book = new ImmutableStockBook(isbn, "Test of The Blad",
-                                                "George RR Testin'", (float) 10, copies*1000, 0, 0, 0, false);
-        booksToAdd.add(book);
-        storeManager.addBooks(booksToAdd);
-
-
-        // Next try to create a race condition:
-        Thread thread0 = new Thread(new Runnable() { public void run() {
-                        for(int i = 0; i< 1000; i++){
-                            Set<BookCopy> booksToSupply = new HashSet<BookCopy>();
-                            BookCopy book = new BookCopy(isbn, copies);
-                            booksToSupply.add(book);
-                            try{
-                                storeManager.addCopies(booksToSupply);
-                            } catch(Exception e){
-                            }
-                        }
-                    }});
-        Thread thread1 = new Thread(new Runnable() { public void run() {
-                        for(int i = 0; i< 1000; i++){
-                            Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
-                            booksToBuy.add(new BookCopy(isbn, copies));
-                            try{
-                                // Try to buy books
-                                client.buyBooks(booksToBuy);
-                            } catch (Exception e){
-                            }
-                        }
-                    }});
-
-        try{
-            // Start the threads
-            thread0.start();
-            thread1.start();
-            // Wait till they finish
-            thread0.join();
-            thread1.join();
-        } catch(Exception e){
-            fail();
-        }
-
-        Set<Integer> booksToCheck = new HashSet<Integer>();
-        booksToCheck.add(isbn);
-        List<StockBook> books = storeManager.getBooksByISBN(booksToCheck);
-        //System.out.println(books);
-        return books.get(0).getNumCopies();
-    }
-
-
-
 
     /**
      * Helper method to get the default book used by initializeBooks
@@ -511,9 +454,61 @@ public class BookStoreTest {
      */
     @Test
     public void testConcurrentAddAndBuy() throws BookStoreException {
+
         // Set of books to buy
-        int copies = 500;
-        assertTrue(addAndBuyBooksConcurrently(TEST_ISBN+10, 500) == 500 * 1000);
+        final int copies = 500;
+        final int isbn = TEST_ISBN + 10;
+        final int threads = 1000;
+
+
+        // First add the book:
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+        StockBook book = new ImmutableStockBook(isbn, "Test of The Blad",
+                                                "George RR Testin'", (float) 10, copies*threads, 0, 0, 0, false);
+        booksToAdd.add(book);
+        storeManager.addBooks(booksToAdd);
+
+
+        // Next try to create a race condition:
+        Thread thread0 = new Thread(new Runnable() { public void run() {
+                        for(int i = 0; i < threads; i++){
+                            Set<BookCopy> booksToSupply = new HashSet<BookCopy>();
+                            BookCopy book = new BookCopy(isbn, copies);
+                            booksToSupply.add(book);
+                            try{
+                                storeManager.addCopies(booksToSupply);
+                            } catch(Exception e){
+                            }
+                        }
+                    }});
+        Thread thread1 = new Thread(new Runnable() { public void run() {
+                        for(int i = 0; i < threads; i++){
+                            Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
+                            booksToBuy.add(new BookCopy(isbn, copies));
+                            try{
+                                // Try to buy books
+                                client.buyBooks(booksToBuy);
+                            } catch (Exception e){
+                            }
+                        }
+                    }});
+
+        try{
+            // Start the threads
+            thread0.start();
+            thread1.start();
+            // Wait till they finish
+            thread0.join();
+            thread1.join();
+        } catch(Exception e){
+            fail();
+        }
+
+        Set<Integer> booksToCheck = new HashSet<Integer>();
+        booksToCheck.add(isbn);
+        List<StockBook> books = storeManager.getBooksByISBN(booksToCheck);
+
+        assertTrue(books.get(0).getNumCopies() == copies*threads);
     }
 
     /**
