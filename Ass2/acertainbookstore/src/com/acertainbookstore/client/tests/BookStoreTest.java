@@ -592,10 +592,16 @@ public class BookStoreTest {
                     }});
         Thread thread1 = new Thread(new Runnable() { public void run() {
                         while(!Thread.currentThread().isInterrupted()) {
+                            int count = -1;
                             try{
                                 List<StockBook> books = storeManager.getBooks();
                                 for(StockBook book : books) {
-                                    assertTrue(book.getNumCopies() - copies + 1 <= 1);
+                                    if(count == -1) {
+                                        count = book.getNumCopies();
+                                        assertTrue(book.getNumCopies() - copies + 1 <= 1);
+                                    } else {
+                                        assertTrue(book.getNumCopies() == count);
+                                    }
                                 }
                             } catch(Exception e) {
                                 fail();
