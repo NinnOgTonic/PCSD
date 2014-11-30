@@ -5,6 +5,8 @@ package com.acertainbookstore.business;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -151,6 +153,21 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         if (editorPicks == null) {
             throw new BookStoreException(BookStoreConstants.NULL_INPUT);
         }
+
+    	List<BookEditorPick> sortedEditorPicks = new ArrayList<BookEditorPick>(editorPicks);
+		Collections.sort
+             (sortedEditorPicks,
+              new Comparator<BookEditorPick>() {
+                 @Override
+                 public int compare(BookEditorPick b1, BookEditorPick b2) {
+                     int f1 = b1.getISBN();
+                     int f2 = b2.getISBN();
+                     if      (f1  < f2) return -1;
+                     else if (f1 == f2) return  0;
+                     else               return  1;
+                 }
+             });
+
 
         int ISBNVal;
 

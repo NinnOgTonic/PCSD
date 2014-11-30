@@ -39,6 +39,15 @@ public class BookEditorPick {
         return false;
     }
 
+    /**
+     * Returns a string representation of the book.
+     */
+    public String toString() {
+        String bookString = "ISBN = " + this.getISBN() + ", isPick = "
+            + this.isEditorPick();
+        return bookString;
+    }
+
     public int hashCode() {
         return getISBN();
     }
