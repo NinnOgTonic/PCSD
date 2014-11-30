@@ -72,7 +72,7 @@ public class BookStoreTest {
     /**
      * Helper method to add some books concurrently
      */
-    public int addAndBuyBooksConcurrently(int isbn, int copies) throws BookStoreException {
+    public int addAndBuyBooksConcurrently(final int isbn, final int copies) throws BookStoreException {
 
         // First add the book:
         Set<StockBook> booksToAdd = new HashSet<StockBook>();
@@ -120,7 +120,7 @@ public class BookStoreTest {
         Set<Integer> booksToCheck = new HashSet<Integer>();
         booksToCheck.add(isbn);
         List<StockBook> books = storeManager.getBooksByISBN(booksToCheck);
-        System.out.println(books);
+        //System.out.println(books);
         return books.get(0).getNumCopies();
     }
 
@@ -507,13 +507,62 @@ public class BookStoreTest {
 
 
     /**
-     * Tests for race condition via addAndBuyBooksConcurrently() functionality
+     * Test1: Tests for race condition via addAndBuyBooksConcurrently() functionality
      */
     @Test
     public void testConcurrentAddAndBuy() throws BookStoreException {
         // Set of books to buy
         int copies = 500;
         assertTrue(addAndBuyBooksConcurrently(TEST_ISBN+10, 500) == 500 * 1000);
+    }
+
+    /**
+     * Test2: Tests for race condition and locking via checkAddAndBuyBookCountConcurrently() functionality
+     */
+    @Test
+    public void testConcurrentAddAndBuyBookCount() throws BookStoreException {
+        final int copies = 500;
+        storeManager.removeAllBooks();
+        final Set<BookCopy> bookSet = new HashSet<BookCopy>();
+
+        for(int j = 0; j < 5; j++) {
+            addBooks(TEST_ISBN + j, copies);
+            bookSet.add(new BookCopy(TEST_ISBN + j, 1));
+        }
+
+        Thread thread0 = new Thread(new Runnable() { public void run() {
+                        for(int i = 0; i< 1000; i++){
+                            try{
+                                client.buyBooks(bookSet);
+                                storeManager.addCopies(bookSet);
+                            } catch(Exception e){
+                                fail();
+                            }
+                        }
+                    }});
+        Thread thread1 = new Thread(new Runnable() { public void run() {
+                        while(!Thread.currentThread().isInterrupted()) {
+                            try{
+                                List<StockBook> books = storeManager.getBooks();
+                                for(StockBook book : books) {
+                                    assertTrue(book.getNumCopies() - copies + 1 <= 1);
+                                }
+                            } catch(Exception e) {
+                                fail();
+                            }
+                        }
+                    }});
+
+        try{
+            // Start the threads
+            thread0.start();
+            thread1.start();
+            // Wait till they finish
+            thread0.join();
+            thread1.interrupt();
+        } catch(Exception e){
+            fail();
+        }
 
     }
 
