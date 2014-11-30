@@ -125,7 +125,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return listBooks;
         } finally {
-            loldongs.readLock().lock();
+            loldongs.readLock().unlock();
         }
     }
 
