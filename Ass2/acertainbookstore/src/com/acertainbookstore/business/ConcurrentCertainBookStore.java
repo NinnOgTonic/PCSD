@@ -36,10 +36,26 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         loldongs = new ReentrantReadWriteLock(true);
     }
 
+    private void take_global(boolean write) {
+        if(write) {
+            loldongs.writeLock().lock();
+        } else {
+            loldongs.readLock().lock();
+        }
+    }
+
+    private void release_global(boolean write) {
+        if(write) {
+            loldongs.writeLock().unlock();
+        } else {
+            loldongs.readLock().unlock();
+        }
+    }
+
     public void addBooks(Set<StockBook> bookSet)
         throws BookStoreException {
 
-        loldongs.writeLock().lock();
+        take_global(true);
 
         try {
             if (bookSet == null) {
@@ -70,7 +86,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                 bookMap.put(ISBN, new BookStoreBook(book));
             }
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
         return;
     }
@@ -79,7 +95,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         throws BookStoreException {
         int ISBN, numCopies;
 
-        loldongs.writeLock().lock();
+        take_global(true);
 
         try {
             if (bookCopiesSet == null) {
@@ -110,12 +126,12 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                 book.addCopies(numCopies);
             }
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
     }
 
     public List<StockBook> getBooks() {
-        loldongs.readLock().lock();
+        take_global(false);
 
         try {
             List<StockBook> listBooks = new ArrayList<StockBook>();
@@ -125,7 +141,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return listBooks;
         } finally {
-            loldongs.readLock().unlock();
+            release_global(false);
         }
     }
 
@@ -139,7 +155,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         int ISBNVal;
 
 
-        loldongs.writeLock().lock();
+        take_global(true);
 
         try {
             for (BookEditorPick editorPickArg : editorPicks) {
@@ -158,7 +174,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return;
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
     }
 
@@ -173,7 +189,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         BookStoreBook book;
         Boolean saleMiss = false;
 
-        loldongs.writeLock().lock();
+        take_global(true);
 
         try {
             for (BookCopy bookCopyToBuy : bookCopiesToBuy) {
@@ -209,14 +225,14 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return;
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
     }
 
 
     public List<StockBook> getBooksByISBN(Set<Integer> isbnSet)
         throws BookStoreException {
-        loldongs.readLock().lock();
+        take_global(false);
         try {
             if (isbnSet == null) {
                 throw new BookStoreException(BookStoreConstants.NULL_INPUT);
@@ -238,13 +254,13 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
             return listBooks;
         } finally {
-            loldongs.readLock().unlock();
+            release_global(false);
         }
     }
 
     public List<Book> getBooks(Set<Integer> isbnSet)
         throws BookStoreException {
-        loldongs.readLock().lock();
+        take_global(false);
         try {
             if (isbnSet == null) {
                 throw new BookStoreException(BookStoreConstants.NULL_INPUT);
@@ -267,13 +283,13 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return listBooks;
         } finally {
-            loldongs.readLock().unlock();
+            release_global(false);
         }
     }
 
     public List<Book> getEditorPicks(int numBooks)
         throws BookStoreException {
-        loldongs.readLock().lock();
+        take_global(false);
         try {
             if (numBooks < 0) {
                 throw new BookStoreException("numBooks = " + numBooks
@@ -321,23 +337,23 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
             return listEditorPicks;
         } finally {
-            loldongs.readLock().unlock();
+            release_global(false);
         }
 
     }
 
     public void removeAllBooks() throws BookStoreException {
-        loldongs.writeLock().lock();
+        take_global(true);
         try {
             bookMap.clear();
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
     }
 
     public void removeBooks(Set<Integer> isbnSet)
         throws BookStoreException {
-        loldongs.writeLock().lock();
+        take_global(true);
         try {
 
             if (isbnSet == null) {
@@ -356,7 +372,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                 bookMap.remove(isbn);
             }
         } finally {
-            loldongs.writeLock().unlock();
+            release_global(true);
         }
     }
 }
