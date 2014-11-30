@@ -437,7 +437,6 @@ public class StockManagerTest {
         booksInStoreList = storeManager.getBooks();
         assertTrue(booksInStoreList.size() == 0);
     }
-
     // /**
     //  * Tests basic getBooksInDemand
     //  */
