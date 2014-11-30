@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.acertainbookstore.business.Book;
 import com.acertainbookstore.business.BookCopy;
 import com.acertainbookstore.business.BookRating;
-import com.acertainbookstore.business.CertainBookStore;
+import com.acertainbookstore.business.ConcurrentCertainBookStore;
 import com.acertainbookstore.business.ImmutableStockBook;
 import com.acertainbookstore.business.StockBook;
 import com.acertainbookstore.client.BookStoreHTTPProxy;
@@ -45,7 +45,7 @@ public class BookStoreTest {
             localTest = (localTestProperty != null) ? Boolean
                 .parseBoolean(localTestProperty) : localTest;
             if (localTest) {
-                CertainBookStore store = new CertainBookStore();
+                ConcurrentCertainBookStore store = new ConcurrentCertainBookStore();
                 storeManager = store;
                 client = store;
             } else {
@@ -581,7 +581,7 @@ public class BookStoreTest {
         }
 
         Thread thread0 = new Thread(new Runnable() { public void run() {
-                        for(int i = 0; i< 1000; i++){
+                        for(int i = 0; i < 10000; i++){
                             try{
                                 client.buyBooks(bookSet);
                                 storeManager.addCopies(bookSet);
@@ -631,28 +631,29 @@ public class BookStoreTest {
         final HashSet<BookCopy> books = new HashSet<BookCopy>();
         books.add(new BookCopy(TEST_ISBN + 1, 1));
 
-        List<Thread> threads;// = new List<Thread>();
+        Thread[] threads = new Thread[numThreads];
 
         for(int j = 0; j < numThreads; j++) {
-            threads.add(new Thread(new Runnable() { public void run() {
+            final int fuckJava = j;
+            threads[j] = new Thread(new Runnable() { public void run() {
                 try{
-                    errors.get(j) = 0;
+                    errors[fuckJava] = 0;
                     client.buyBooks(books);
                 } catch(Exception e){
-                    errors.get(j) = 1;
+                    errors[fuckJava] = 1;
                 }
-            }}));
+            }});
         }
 
         try{
             for(int i = 0; i < numThreads; i++) {
                 // Start the threads
-                threads.get(i).start();
+                threads[i].start();
             }
 
             for(int i = 0; i < numThreads; i++) {
                 // Wait till they finish
-                threads.get(i).join();
+                threads[i].join();
             }
         } catch(Exception e){
             fail();

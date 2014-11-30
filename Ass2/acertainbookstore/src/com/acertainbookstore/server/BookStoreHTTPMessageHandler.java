@@ -17,7 +17,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import com.acertainbookstore.business.BookCopy;
 import com.acertainbookstore.business.BookEditorPick;
 import com.acertainbookstore.business.BookRating;
-import com.acertainbookstore.business.CertainBookStore;
+import com.acertainbookstore.business.ConcurrentCertainBookStore;
 import com.acertainbookstore.business.StockBook;
 import com.acertainbookstore.utils.BookStoreConstants;
 import com.acertainbookstore.utils.BookStoreException;
@@ -33,9 +33,9 @@ import com.acertainbookstore.utils.BookStoreUtility;
  *
  */
 public class BookStoreHTTPMessageHandler extends AbstractHandler {
-    private CertainBookStore myBookStore = null;
+    private ConcurrentCertainBookStore myBookStore = null;
 
-    public BookStoreHTTPMessageHandler(CertainBookStore bookStore) {
+    public BookStoreHTTPMessageHandler(ConcurrentCertainBookStore bookStore) {
         myBookStore = bookStore;
     }
 

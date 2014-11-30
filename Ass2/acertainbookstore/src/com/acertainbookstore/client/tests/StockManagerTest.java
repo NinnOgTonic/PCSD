@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.acertainbookstore.business.Book;
 import com.acertainbookstore.business.BookCopy;
 import com.acertainbookstore.business.BookEditorPick;
-import com.acertainbookstore.business.CertainBookStore;
+import com.acertainbookstore.business.ConcurrentCertainBookStore;
 import com.acertainbookstore.business.ImmutableStockBook;
 import com.acertainbookstore.business.StockBook;
 import com.acertainbookstore.client.BookStoreHTTPProxy;
@@ -52,7 +52,7 @@ public class StockManagerTest {
             localTest = (localTestProperty != null) ? Boolean
                 .parseBoolean(localTestProperty) : localTest;
             if (localTest) {
-                CertainBookStore store = new CertainBookStore();
+                ConcurrentCertainBookStore store = new ConcurrentCertainBookStore();
                 storeManager = store;
                 client = store;
             } else {
