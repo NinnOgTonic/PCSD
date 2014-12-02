@@ -1,0 +1,24 @@
+\chapter{Tests}
+
+\section{Test-driven development at acertainbookstore.com}
+We have written 4 tests to test locking and atomicity of a certainly improved bookstore.
+
+\subsection{Test 0}
+Test 0 is not one of the tests described in the assignment. This test creates a whole bunch of books, and then spawns a whole bunch of threads that each buy a buch of books a bunch of times. In the end, every single book should be bought successfully, and the end result is that no books remain.
+
+This test tests that locking works properly, so that concurrent threads can buy books without their write operations interfering with eachother. This test is more fine-grained than test 1, which is why we added it. If anything goes wrong here, the test will fail. The same cannot be said of test 1.
+
+\subsection{Test 1}
+Test 1 is as described in the assignment. This test has one thread buying book, while another thread replenishes books. In the end, we should have as many books as when we started.
+
+Again this tests that locking works, such that concurrent threads do not interfere with eachothers writes. However, if locking isn't working properly, the thread writes can overwrite eachother in a manner such that the mistakes cancel out when measuring the amount of books available in the end.
+
+\subsection{Test 2}
+Test 2 is as described in the assignment. This test has one thread buying and then restocking a collection of books. Meanwhile, another thread continuously verifies that there are exactly as many of each book in the collection in stock, and that this amount of books corresponds to the books having just been either bought or replenished.
+
+This also tests that buying and replenishing a set of books is atomic. If it is not atomic, the amount of books available might differ between books in the collection.
+
+\subsection{Test 3}
+Test 3 is not one of the tests described in the assignment. This thread creates a number of books, and then spawns even more threads that each attempt to buy a book. Since there are more threads than books, a number of these threads should fail. The test succeeds if exactly the correct amount of threads fail.
+
+This also tests locking, since without locking, these threads would overwrite eachothers writes. Only if all threads behave correctly will the test succeed.
