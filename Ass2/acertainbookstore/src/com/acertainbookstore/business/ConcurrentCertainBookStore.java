@@ -56,32 +56,30 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         }
     }
 
-    private void take_local(int isbn, boolean write)
-        throws BookStoreException {
+    private boolean take_local(int isbn, boolean write) {
         ReadWriteLock 눈사람 = why_cant_I_hold_all_these_locks.get(isbn);
-        if (눈사람 == null)
-            throw new BookStoreException(BookStoreConstants.ISBN + isbn
-                                         + BookStoreConstants.NOT_AVAILABLE);
+        if (눈사람 == null) return false;
 
         if(write) {
             눈사람.writeLock().lock();
         } else {
             눈사람.readLock().lock();
         }
+
+        return true;
     }
 
-    private void release_local(int isbn, boolean write)
-        throws BookStoreException {
+    private boolean release_local(int isbn, boolean write) {
         ReadWriteLock 눈사람 = why_cant_I_hold_all_these_locks.get(isbn);
-        if (눈사람 == null)
-            throw new BookStoreException(BookStoreConstants.ISBN + isbn
-                                         + BookStoreConstants.NOT_AVAILABLE);
+        if (눈사람 == null) return false;
 
         if(write) {
             눈사람.writeLock().unlock();
         } else {
             눈사람.readLock().unlock();
         }
+
+        return true;
     }
 
     public void addBooks(Set<StockBook> bookSet)
@@ -126,18 +124,33 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
     public void addCopies(Set<BookCopy> bookCopiesSet)
         throws BookStoreException {
-        int ISBN, numCopies;
+        BookStoreBook book;
+
+        if (bookCopiesSet == null) {
+            throw new BookStoreException(BookStoreConstants.NULL_INPUT);
+        }
+
+        List<Integer> taken = new ArrayList<Integer>();
+        List<BookCopy> sortedBookCopiesSet = new ArrayList<BookCopy>(bookCopiesSet);
+        Collections.sort
+            (sortedBookCopiesSet,
+             new Comparator<BookCopy>() {
+                @Override
+                    public int compare(BookCopy b1, BookCopy b2) {
+                    int f1 = b1.getISBN();
+                    int f2 = b2.getISBN();
+                    if      (f1  < f2) return -1;
+                    else if (f1 == f2) return  0;
+                    else               return  1;
+                }
+            });
 
         take_global(false);
 
         try {
-            if (bookCopiesSet == null) {
-                throw new BookStoreException(BookStoreConstants.NULL_INPUT);
-            }
-
-            for (BookCopy bookCopy : bookCopiesSet) {
-                ISBN = bookCopy.getISBN();
-                numCopies = bookCopy.getNumCopies();
+            for (BookCopy bookCopy : sortedBookCopiesSet) {
+                int ISBN = bookCopy.getISBN();
+                int numCopies = bookCopy.getNumCopies();
                 if (BookStoreUtility.isInvalidISBN(ISBN))
                     throw new BookStoreException(BookStoreConstants.ISBN + ISBN
                                                  + BookStoreConstants.INVALID);
@@ -147,49 +160,54 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                 if (BookStoreUtility.isInvalidNoCopies(numCopies))
                     throw new BookStoreException(BookStoreConstants.NUM_COPIES
                                                  + numCopies + BookStoreConstants.INVALID);
-
             }
 
-            BookStoreBook book;
             // Update the number of copies
-            for (BookCopy bookCopy : bookCopiesSet) {
-                ISBN = bookCopy.getISBN();
-                numCopies = bookCopy.getNumCopies();
+            for (BookCopy bookCopy : sortedBookCopiesSet) {
+                int ISBN = bookCopy.getISBN();
+                int numCopies = bookCopy.getNumCopies();
                 take_local(ISBN, true);
-                try {
-                    book = bookMap.get(ISBN);
-                    book.addCopies(numCopies);
-                } finally {
-                    release_local(ISBN, true);
-                }
+                taken.add(ISBN);
+                book = bookMap.get(ISBN);
+                book.addCopies(numCopies);
             }
         } finally {
+            for(int ISBN : taken) {
+                release_local(ISBN, true);
+            }
             release_global(false);
         }
     }
 
     public List<StockBook> getBooks() {
+        List<StockBook> listBooks = new ArrayList<StockBook>();
+        List<Integer> sortedBookMapKeys = new ArrayList<Integer>(bookMap.keySet());
+        Collections.sort(sortedBookMapKeys);
+        List<Integer> taken = new ArrayList<Integer>();
+
         take_global(false);
 
         try {
-            List<StockBook> listBooks = new ArrayList<StockBook>();
-            Collection<Integer> bookMapKeys = bookMap.keys();
-            for (Integer ISBN : bookMapValues) {
-                take_local(ISBN, true);
-                try {
-                    listBooks.add(bookMap.get(ISBN).immutableStockBook());
-                } finally {
-                    release_local(ISBN, true);
-                }
+            for (Integer ISBN : sortedBookMapKeys) {
+                take_local(ISBN, false);
+                taken.add(ISBN);
+                listBooks.add(bookMap.get(ISBN).immutableStockBook());
             }
             return listBooks;
         } finally {
+            for(int ISBN : taken) {
+                release_local(ISBN, false);
+            }
             release_global(false);
         }
     }
 
     public void updateEditorPicks(Set<BookEditorPick> editorPicks)
         throws BookStoreException {
+
+        List<Integer> taken = new ArrayList<Integer>();
+        int ISBNVal;
+
         // Check that all ISBNs that we add/remove are there first.
         if (editorPicks == null) {
             throw new BookStoreException(BookStoreConstants.NULL_INPUT);
@@ -210,10 +228,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             });
 
 
-        int ISBNVal;
-
         take_global(false);
-        List<int> taken = new ArrayList<int>();
 
         try {
             for (BookEditorPick editorPickArg : sortedEditorPicks) {
@@ -248,9 +263,9 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         }
 
         // Check that all ISBNs that we buy are there first.
-        int ISBN;
         BookStoreBook book;
         Boolean saleMiss = false;
+        List<Integer> taken = new ArrayList<Integer>();
 
         List<BookCopy> sortedBookCopiesToBuy = new ArrayList<BookCopy>(bookCopiesToBuy);
         Collections.sort
@@ -266,12 +281,11 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
                 }
             });
 
-        take_global(true);
-        List<int> taken = new ArrayList<int>();
+        take_global(false);
 
         try {
             for (BookCopy bookCopyToBuy : sortedBookCopiesToBuy) {
-                ISBN = bookCopyToBuy.getISBN();
+                int ISBN = bookCopyToBuy.getISBN();
                 if (bookCopyToBuy.getNumCopies() < 0)
                     throw new BookStoreException(BookStoreConstants.NUM_COPIES
                                                  + bookCopyToBuy.getNumCopies()
@@ -308,7 +322,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             for(int ISBN : taken) {
                 release_local(ISBN, true);
             }
-            release_global(true);
+            release_global(false);
         }
     }
 
@@ -322,7 +336,8 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
 
         List<Integer> sortedIsbnSet = new ArrayList<Integer>(isbnSet);
-        sortedIsbnSet.sort();
+        List<Integer> taken = new ArrayList<Integer>();
+        Collections.sort(sortedIsbnSet);
 
         take_global(false);
 
@@ -338,17 +353,17 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
             List<StockBook> listBooks = new ArrayList<StockBook>();
 
-            for (Integer ISBN : isbnSet) {
+            for (Integer ISBN : sortedIsbnSet) {
                 take_local(ISBN, false);
-                try {
-                    listBooks.add(bookMap.get(ISBN).immutableStockBook());
-                } finally {
-                    release_local(ISBN, false);
-                }
+                taken.add(ISBN);
+                listBooks.add(bookMap.get(ISBN).immutableStockBook());
             }
 
             return listBooks;
         } finally {
+            for(int ISBN : taken) {
+                release_local(ISBN, false);
+            }
             release_global(false);
         }
     }
@@ -361,13 +376,14 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
         }
 
         List<Integer> sortedIsbnSet = new ArrayList<Integer>(isbnSet);
-        sortedIsbnSet.sort();
+        List<Integer> taken = new ArrayList<Integer>();
+        Collections.sort(sortedIsbnSet);
 
         take_global(false);
 
         try {
             // Check that all ISBNs that we rate are there first.
-            for (Integer ISBN : isbnSet) {
+            for (Integer ISBN : sortedIsbnSet) {
                 if (BookStoreUtility.isInvalidISBN(ISBN))
                     throw new BookStoreException(BookStoreConstants.ISBN + ISBN
                                                  + BookStoreConstants.INVALID);
@@ -379,16 +395,16 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             List<Book> listBooks = new ArrayList<Book>();
 
             // Get the books
-            for (Integer ISBN : isbnSet) {
+            for (Integer ISBN : sortedIsbnSet) {
                 take_local(ISBN, false);
-                try {
-                    listBooks.add(bookMap.get(ISBN).immutableBook());
-                } finally {
-                    release_local(ISBN, false);
-                }
+                taken.add(ISBN);
+                listBooks.add(bookMap.get(ISBN).immutableBook());
             }
             return listBooks;
         } finally {
+            for(int ISBN : taken) {
+                release_local(ISBN, false);
+            }
             release_global(false);
         }
     }
@@ -396,7 +412,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
     public List<Book> getEditorPicks(int numBooks)
         throws BookStoreException {
         take_global(false);
-        ArrayList<int> taken = new ArrayList<int>();
+        ArrayList<Integer> taken = new ArrayList<Integer>();
         try {
             if (numBooks < 0) {
                 throw new BookStoreException("numBooks = " + numBooks
@@ -404,10 +420,10 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             }
 
             List<Book> listEditorPicks = new ArrayList<Book>();
-            List<int> bookMapKeys = bookMap.keys();
-            List<int> toBeAdded = List<Integer>();
-            bookMapKeys.sort();
-            for (int ISBN : bookMapValues) {
+            List<Integer> sortedBookMapKeys = new ArrayList<Integer>(bookMap.keySet());
+            List<Integer> toBeAdded = new ArrayList<Integer>();
+            Collections.sort(sortedBookMapKeys);
+            for (int ISBN : sortedBookMapKeys) {
                 take_local(ISBN, false);
                 taken.add(ISBN);
 
@@ -418,8 +434,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
 
             // Find numBooks random indices of books that will be picked
             Random rand = new Random();
-            int totalCount = toBeAdded.size();
-            for(int totalCount = toBeAdded.size(); totalcount > 0 && numBooks > 0; totalcount--, numBooks--) {
+            for(int totalCount = toBeAdded.size(); totalCount > 0 && numBooks > 0; totalCount--, numBooks--) {
                 int nextIndex = rand.nextInt(totalCount);
                 int nextISBN  = toBeAdded.get(nextIndex);
                 int lastISBN  = toBeAdded.get(totalCount-1);
@@ -431,7 +446,7 @@ public class ConcurrentCertainBookStore implements BookStore, StockManager {
             return listEditorPicks;
         } finally {
             for(int ISBN : taken) {
-                release_local(ISBN, true);
+                release_local(ISBN, false);
             }
             release_global(false);
         }
