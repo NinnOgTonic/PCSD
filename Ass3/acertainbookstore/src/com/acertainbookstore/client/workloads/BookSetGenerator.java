@@ -16,7 +16,7 @@ public class BookSetGenerator {
 
 	/**
 	 * Returns num randomly selected isbns from the input set
-	 * 
+	 *
 	 * @param num
 	 * @return
 	 */
@@ -26,7 +26,7 @@ public class BookSetGenerator {
 
 	/**
 	 * Return num stock books. For now return an ImmutableStockBook
-	 * 
+	 *
 	 * @param num
 	 * @return
 	 */

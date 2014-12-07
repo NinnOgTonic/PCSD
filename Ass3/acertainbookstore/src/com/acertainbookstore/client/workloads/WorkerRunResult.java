@@ -1,14 +1,14 @@
 package com.acertainbookstore.client.workloads;
 
 /**
- * 
+ *
  * WorkerRunResult class represents the result returned by a worker class after
  * running the workload interactions
- * 
+ *
  */
 public class WorkerRunResult {
 	private int successfulInteractions; // total number of successful interactions
-	private int totalRuns; // total number of interactions run 
+	private int totalRuns; // total number of interactions run
 	private long elapsedTimeInNanoSecs; // total time taken to run all
 										// interactions
 	private int successfulFrequentBookStoreInteractionRuns; // number of

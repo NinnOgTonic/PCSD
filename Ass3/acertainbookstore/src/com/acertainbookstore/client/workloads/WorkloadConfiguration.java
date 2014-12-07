@@ -4,10 +4,10 @@ import com.acertainbookstore.interfaces.BookStore;
 import com.acertainbookstore.interfaces.StockManager;
 
 /**
- * 
+ *
  * WorkloadConfiguration represents the configuration parameters to be used by
  * Workers class for running the workloads
- * 
+ *
  */
 public class WorkloadConfiguration {
 	private int numBooksToBuy = 5;
@@ -62,7 +62,7 @@ public class WorkloadConfiguration {
 	public void setNumBooksWithLeastCopies(int numBooksWithLeastCopies) {
 		this.numBooksWithLeastCopies = numBooksWithLeastCopies;
 	}
-	
+
 	public StockManager getStockManager() {
 		return stockManager;
 	}

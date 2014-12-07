@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.acertainbookstore.client.workloads;
 
@@ -18,11 +18,11 @@ import com.acertainbookstore.utils.BookStoreConstants;
 import com.acertainbookstore.utils.BookStoreException;
 
 /**
- * 
+ *
  * CertainWorkload class runs the workloads by different workers concurrently.
  * It configures the environment for the workers using WorkloadConfiguration
  * objects and reports the metrics
- * 
+ *
  */
 public class CertainWorkload {
 
@@ -87,7 +87,7 @@ public class CertainWorkload {
 
 	/**
 	 * Computes the metrics and prints them
-	 * 
+	 *
 	 * @param workerRunResults
 	 */
 	public static void reportMetric(List<WorkerRunResult> workerRunResults) {
@@ -96,9 +96,9 @@ public class CertainWorkload {
 
 	/**
 	 * Generate the data in bookstore before the workload interactions are run
-	 * 
+	 *
 	 * Ignores the serverAddress if its a localTest
-	 * 
+	 *
 	 */
 	public static void initializeBookStoreData(BookStore bookStore,
 			StockManager stockManager) throws BookStoreException {

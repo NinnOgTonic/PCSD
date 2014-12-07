@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.acertainbookstore.client.workloads;
 
@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
 import com.acertainbookstore.utils.BookStoreException;
 
 /**
- * 
+ *
  * Worker represents the workload runner which runs the workloads with
  * parameters using WorkloadConfiguration and then reports the results
- * 
+ *
  */
 public class Worker implements Callable<WorkerRunResult> {
 	private WorkloadConfiguration configuration = null;
@@ -26,10 +26,10 @@ public class Worker implements Callable<WorkerRunResult> {
 	/**
 	 * Run the appropriate interaction while trying to maintain the configured
 	 * distributions
-	 * 
+	 *
 	 * Updates the counts of total runs and successful runs for customer
 	 * interaction
-	 * 
+	 *
 	 * @param chooseInteraction
 	 * @return
 	 */
@@ -94,7 +94,7 @@ public class Worker implements Callable<WorkerRunResult> {
 
 	/**
 	 * Runs the new stock acquisition interaction
-	 * 
+	 *
 	 * @throws BookStoreException
 	 */
 	private void runRareStockManagerInteraction() throws BookStoreException {
@@ -103,7 +103,7 @@ public class Worker implements Callable<WorkerRunResult> {
 
 	/**
 	 * Runs the stock replenishment interaction
-	 * 
+	 *
 	 * @throws BookStoreException
 	 */
 	private void runFrequentStockManagerInteraction() throws BookStoreException {
@@ -112,7 +112,7 @@ public class Worker implements Callable<WorkerRunResult> {
 
 	/**
 	 * Runs the customer interaction
-	 * 
+	 *
 	 * @throws BookStoreException
 	 */
 	private void runFrequentBookStoreInteraction() throws BookStoreException {
