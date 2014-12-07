@@ -93,6 +93,7 @@ public class CertainWorkload {
     public static void reportMetric(List<WorkerRunResult> results) {
         double countSuccess = 0.0;
         double time = 0.0;
+        double timeSeconds = 0.0;
         double totalRuns = 0.0;
         double numCustomerSuccess = 0.0;
         double numCustomerTotal = 0.0;
@@ -109,18 +110,28 @@ public class CertainWorkload {
 
         countSuccess /= threads;
         time /= threads;
+        timeSeconds = time / 1000000000.0;
         totalRuns /= threads;
         numCustomerTotal /= threads;
         numCustomerSuccess /= threads;
 
-        double goodput = time / countSuccess;
+        double goodput = countSuccess / timeSeconds;
         double errorRate = 100 - (countSuccess / totalRuns * 100.0);
         double customerPercentage = numCustomerTotal / totalRuns * 100.0;
-        double latency = 0.0;
+        double latency = time / totalRuns / threads;
 
-        System.out.format("Error rate: %.02lf%%\n", errorRate);
-        System.out.format("Goodput   : %.02lf%%\n", goodput);
-        System.out.format("Customers : %.02lf%%\n", customerPercentage);
+        System.out.format("Statistics averaged over threads:\n");
+        System.out.format("Number of successful runs: %f.\n", countSuccess);
+        System.out.format("Time elapsed: %f seconds.\n", timeSeconds);
+        System.out.format("Total runs: %f.\n", totalRuns);
+        System.out.format("Number of customer runs: %f.\n", numCustomerTotal);
+        System.out.format("Number of successful customer runs: %f.\n", numCustomerSuccess);
+        System.out.format("Number of threads: %f.\n\n", threads);
+
+        System.out.format("Error rate: %.02f%%\n", errorRate);
+        System.out.format("Goodput   : %.02f requests per second.\n", goodput);
+        System.out.format("Latency   : %.02f nano seconds.\n", latency);
+        System.out.format("Customers : %.02f%%\n", customerPercentage);
     }
 
     /**
