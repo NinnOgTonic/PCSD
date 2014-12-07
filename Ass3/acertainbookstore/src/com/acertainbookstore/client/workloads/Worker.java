@@ -126,7 +126,29 @@ public class Worker implements Callable<WorkerRunResult> {
      * @throws BookStoreException
      */
     private void runFrequentStockManagerInteraction() throws BookStoreException {
-        // TODO: Add code for Stock Replenishment Interaction
+        StockManager sm = configuration.getStockManager();
+        List<StockBook> books = sm.getBooks();
+
+        Set<Integer> booksToBeSampled = new HashSet<Integer>();
+
+        for(StockBook book : books){
+            booksToBeSampled.add(book.getISBN());
+        }
+
+
+        BookSetGenerator generator = configuration.getBookSetGenerator();
+
+        Set<Integer> sampledBooks = generator.sampleFromSetOfISBNs(picksToBeSampled, configuration.getNumBooksToAdd());
+
+        Set<BookCopy> booksToSupply = new HashSet<BookCopy>();
+
+        for(Integer isbn : sampledBooks){
+            booksToBuy.add(new BookCopy(isbn, configuration.getNumAddCopies()));
+        }
+
+        sm.addCopies(booksToSupply);
+
+
     }
 
     /**
