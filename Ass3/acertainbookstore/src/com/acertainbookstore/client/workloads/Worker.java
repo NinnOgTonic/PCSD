@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 
 import com.acertainbookstore.utils.BookStoreException;
 import com.acertainbookstore.interfaces.StockManager;
-
+import com.acertainbookstore.business.StockBook;
 
 
 
@@ -113,10 +113,10 @@ public class Worker implements Callable<WorkerRunResult> {
         StockManager stockManager   = configuration.getStockManager();
         BookSetGenerator bookSetGen = configuration.getBookSetGenerator();
 
-        List<StockBook> allBooks  = stockManager.getBooks();
-        List<StockBook> randBooks = bookSetGen.nextSetOfStockBooks();
+        List<StockBook> allBooks = stockManager.getBooks();
+        Set<StockBook> randBooks = bookSetGen.nextSetOfStockBooks(configuration.getNumBooksToAdd());
 
-        Set<Int> isbns = new HashSet<Integer>();
+        Set<Integer> isbns = new HashSet<Integer>();
         Set<StockBook> booksToAdd = new HashSet<StockBook>();
 
         for(StockBook aBook : allBooks) {
@@ -129,7 +129,7 @@ public class Worker implements Callable<WorkerRunResult> {
             }
         }
 
-        stockManager.addBook(booksToAdd);
+        stockManager.addBooks(booksToAdd);
     }
 
     /**
