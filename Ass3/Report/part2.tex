@@ -1,1 +1,75 @@
 \section{Question 2: ARIES}
+
+\subsubsection{1}
+
+Figure \ref{transactiontable} shows the transaction table after analysis phase:
+\begin{figure}[h!]
+\begin{verbatim}
+LSN    LAST_LSN    TRAN_ID    TYPE            PAGE_ID
+---    --------    -------    ----            -------
+1      -           -          begin CKPT      -
+2      -           -          end CKPT        -
+3      3           T1         update          P2
+4      4           T1         update          P1
+5      5           T2         update          P5
+6      6           T2         update          P5
+7      7           T2         update          P3
+\end{verbatim}
+\caption{Transaction table after analysis phase.\label{transactiontable}}
+\end{figure}
+
+Figure \ref{dirtypagetable} shows the dirty page table after analysis phase:
+\begin{figure}[h!]
+\begin{verbatim}
+PAGE_ID    recSLN
+-------    ------
+P2         3
+P1         4
+P5         5
+P3         7
+\end{verbatim}
+\caption{Dirty page table after analysis phase.\label{dirtypagetable}}
+\end{figure}
+
+\subsubsection{2}
+The set of winner transactions is ${T3}$ since it finished, and the loser transaction set is ${T1,T2}$ since they did not, and so they are in the transaction table to be recovered.
+
+\subsubsection{3}
+The redo phase starts at LSN 3, since we are repeating history since the checkpoint. The undo phase starts at 7, since all the updates need to be undone
+
+\subsubsection{4}
+The set of log records that may cause pages to be re-written during the redo phase is {3,4,5,6,7}, since these updates need to be repeated, and they all affect pages.
+
+\subsubsection{5}
+The set of log records undone during undo phase: {3,4,5,6,7}, since these are all in the $ToUndo$ set.
+
+\subsubsection{6}
+Figure \ref{transactiontableafterrecovery} shows the recovery procedure table after the recovery completes:
+\begin{figure}[h!]
+\begin{verbatim}
+LSN    LAST_LSN    TRAN_ID    TYPE                PAGE_ID
+---    --------    -------    ----                -------
+1      -           -          begin CKPT          -
+2      -           -          end CKPT            -
+3      3           T1         update              P2
+4      4           T1         update              P1
+5      5           T2         update              P5
+6      6           T2         update              P5
+7      7           T2         update              P3
+8      -           -          CLR: Undo T2 LSB 7  P3
+9      -           -          CLR: Undo T2 LSB 6  P5
+10     -           -          CLR: Undo T2 LSB 5  P5
+11     -           T2         end                 -
+12     -           -          CLR: Undo T1 LSB 4  P1
+13     -           -          CLR: Undo T1 LSB 3  P2
+14     -           T1         end                 -
+\end{verbatim}
+\caption{Transaction table after recovery phase.\label{transactiontableafterrecovery}}
+\end{figure}
+
+
+
+
+
+
+
