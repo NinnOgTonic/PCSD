@@ -8,6 +8,17 @@ import java.util.concurrent.Callable;
 
 import com.acertainbookstore.utils.BookStoreException;
 
+
+
+
+import com.acertainbookstore.interfaces.BookStore;
+import com.acertainbookstore.business.Book;
+import com.acertainbookstore.business.BookCopy;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  *
  * Worker represents the workload runner which runs the workloads with
@@ -116,7 +127,28 @@ public class Worker implements Callable<WorkerRunResult> {
      * @throws BookStoreException
      */
     private void runFrequentBookStoreInteraction() throws BookStoreException {
-        // TODO: Add code for Customer Interaction
+        BookStore bs = configuration.getBookStore();
+        List<Book> editorPicks = bs.getEditorPicks(configuration.getNumBooksToBuy()*2);
+
+        Set<Integer> picksToBeSampled = new HashSet<Integer>();
+
+        for(Book n : editorPicks){
+            picksToBeSampled.add(n.getISBN());
+        }
+
+        BookSetGenerator generator = configuration.getBookSetGenerator();
+
+        Set<Integer> sampledPicks = generator.sampleFromSetOfISBNs(picksToBeSampled, configuration.getNumBooksToBuy());
+
+        // A set is a subset of itself so...
+        Set<BookCopy> booksToBuy = new HashSet<BookCopy>();
+
+        for(Integer isbn : sampledPicks){
+            booksToBuy.add(new BookCopy(isbn, configuration.getNumBookCopiesToBuy()));
+        }
+
+        bs.buyBooks(booksToBuy);
+
     }
 
 }
