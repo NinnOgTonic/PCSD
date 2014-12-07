@@ -99,6 +99,14 @@ public class Worker implements Callable<WorkerRunResult> {
      */
     private void runRareStockManagerInteraction() throws BookStoreException {
         // TODO: Add code for New Stock Acquisition Interaction
+        /*allBooks  = getBooks();
+        randBooks = nextSetOfStockBooks();
+        for(book : randBooks) {
+            if(!book.isbn in isbns(allBooks)) {
+                addBook(book);
+            }
+        }*/
+
     }
 
     /**
