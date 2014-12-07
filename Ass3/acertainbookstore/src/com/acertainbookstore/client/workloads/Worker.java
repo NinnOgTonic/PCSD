@@ -7,7 +7,8 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 
 import com.acertainbookstore.utils.BookStoreException;
-
+import com.acertainbookstore.interfaces.StockManager;
+import com.acertainbookstore.business.StockBook;
 
 
 
@@ -109,15 +110,26 @@ public class Worker implements Callable<WorkerRunResult> {
      * @throws BookStoreException
      */
     private void runRareStockManagerInteraction() throws BookStoreException {
-        // TODO: Add code for New Stock Acquisition Interaction
-        /*allBooks  = getBooks();
-        randBooks = nextSetOfStockBooks();
-        for(book : randBooks) {
-            if(!book.isbn in isbns(allBooks)) {
-                addBook(book);
-            }
-        }*/
+        StockManager stockManager   = configuration.getStockManager();
+        BookSetGenerator bookSetGen = configuration.getBookSetGenerator();
 
+        List<StockBook> allBooks = stockManager.getBooks();
+        Set<StockBook> randBooks = bookSetGen.nextSetOfStockBooks(configuration.getNumBooksToAdd());
+
+        Set<Integer> isbns = new HashSet<Integer>();
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+
+        for(StockBook aBook : allBooks) {
+            isbns.add(aBook.getISBN());
+        }
+
+        for(StockBook rBook : randBooks) {
+            if(!isbns.contains(rBook.getISBN())) {
+                booksToAdd.add(rBook);
+            }
+        }
+
+        stockManager.addBooks(booksToAdd);
     }
 
     /**
@@ -138,12 +150,12 @@ public class Worker implements Callable<WorkerRunResult> {
 
         BookSetGenerator generator = configuration.getBookSetGenerator();
 
-        Set<Integer> sampledBooks = generator.sampleFromSetOfISBNs(picksToBeSampled, configuration.getNumBooksToAdd());
+        Set<Integer> sampledBooks = generator.sampleFromSetOfISBNs(booksToBeSampled, configuration.getNumBooksToAdd());
 
         Set<BookCopy> booksToSupply = new HashSet<BookCopy>();
 
         for(Integer isbn : sampledBooks){
-            booksToBuy.add(new BookCopy(isbn, configuration.getNumAddCopies()));
+            booksToSupply.add(new BookCopy(isbn, configuration.getNumAddCopies()));
         }
 
         sm.addCopies(booksToSupply);
