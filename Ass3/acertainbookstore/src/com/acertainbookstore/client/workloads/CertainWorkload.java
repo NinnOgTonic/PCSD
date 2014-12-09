@@ -3,6 +3,8 @@
  */
 package com.acertainbookstore.client.workloads;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +18,7 @@ import com.acertainbookstore.interfaces.BookStore;
 import com.acertainbookstore.interfaces.StockManager;
 import com.acertainbookstore.utils.BookStoreConstants;
 import com.acertainbookstore.utils.BookStoreException;
+import com.acertainbookstore.business.StockBook;
 
 /**
  *
@@ -30,7 +33,7 @@ public class CertainWorkload {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        int numConcurrentWorkloadThreads = 10;
+       int numConcurrentWorkloadThreads = 1;
         String serverAddress = "http://localhost:8081";
         boolean localTest = true;
         List<WorkerRunResult> workerRunResults = new ArrayList<WorkerRunResult>();
@@ -118,7 +121,7 @@ public class CertainWorkload {
         double goodput = countSuccess / timeSeconds;
         double errorRate = 100 - (countSuccess / totalRuns * 100.0);
         double customerPercentage = numCustomerTotal / totalRuns * 100.0;
-        double latency = time / totalRuns / threads;
+        double latency = time / countSuccess / threads;
 
         System.out.format("Statistics averaged over threads:\n");
         System.out.format("Number of successful runs: %f.\n", countSuccess);
@@ -126,11 +129,10 @@ public class CertainWorkload {
         System.out.format("Total runs: %f.\n", totalRuns);
         System.out.format("Number of customer runs: %f.\n", numCustomerTotal);
         System.out.format("Number of successful customer runs: %f.\n", numCustomerSuccess);
-        System.out.format("Number of threads: %f.\n\n", threads);
-
-        System.out.format("Error rate: %.02f%%\n", errorRate);
+        System.out.format("Number of threads: %f.\n", threads);
         System.out.format("Goodput   : %.02f requests per second.\n", goodput);
         System.out.format("Latency   : %.02f nano seconds.\n", latency);
+        System.out.format("Error rate: %.02f%%\n", errorRate);
         System.out.format("Customers : %.02f%%\n", customerPercentage);
     }
 
@@ -141,9 +143,28 @@ public class CertainWorkload {
      *
      */
     public static void initializeBookStoreData(BookStore bookStore,
-            StockManager stockManager) throws BookStoreException {
+            StockManager stockManager) throws Exception {
 
-        // TODO: You should initialize data for your bookstore here
+        //StockManager stockManager   = configuration.getStockManager();
+        WorkloadConfiguration configuration = new WorkloadConfiguration(bookStore, stockManager);
+        BookSetGenerator bookSetGen = configuration.getBookSetGenerator();
 
+        List<StockBook> allBooks = stockManager.getBooks();
+        Set<StockBook> randBooks = bookSetGen.nextSetOfStockBooks(configuration.getNumBooksToAdd());
+
+        Set<Integer> isbns = new HashSet<Integer>();
+        Set<StockBook> booksToAdd = new HashSet<StockBook>();
+
+        for(StockBook aBook : allBooks) {
+            isbns.add(aBook.getISBN());
+        }
+
+        for(StockBook rBook : randBooks) {
+            if(!isbns.contains(rBook.getISBN())) {
+                booksToAdd.add(rBook);
+            }
+        }
+
+        stockManager.addBooks(booksToAdd);
     }
 }
