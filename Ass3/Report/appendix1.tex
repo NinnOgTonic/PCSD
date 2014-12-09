@@ -1,0 +1,69 @@
+These figures show the output of running our implementation with 500 runs and with 1-20 threads. Figure \ref{stats} shows the full outputs for 10 threads, and the other figures show the outputs used to get data for the graphs in section 3.
+
+\begin{figure}[h!]
+\begin{verbatim}
+     [java] Statistics averaged over threads:
+     [java] Number of successful runs: 495.200000.
+     [java] Time elapsed: 0.276611 seconds.
+     [java] Total runs: 500.000000.
+     [java] Number of customer runs: 299.500000.
+     [java] Number of successful customer runs: 295.000000.
+     [java] Number of threads: 10.000000.
+     [java] Goodput   : 1790.24 requests per second.
+     [java] Latency   : 55858.42 nano seconds.
+     [java] Error rate: 0.96%
+     [java] Customers : 59.90%
+\end{verbatim}
+\caption{Full output of local test with 500 runs and 10 threads.\ref{stats}}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{verbatim}
+     [java] Number of threads: 1.000000.
+     [java] Goodput   : 4668.61 requests per second.
+     [java] Latency   : 214196.62 nano seconds.
+
+     [java] Number of threads: 5.000000.
+     [java] Goodput   : 2401.12 requests per second.
+     [java] Latency   : 83294.38 nano seconds.
+
+     [java] Number of threads: 10.000000.
+     [java] Goodput   : 1811.63 requests per second.
+     [java] Latency   : 55198.89 nano seconds.
+
+     [java] Number of threads: 15.000000.
+     [java] Goodput   : 1324.13 requests per second.
+     [java] Latency   : 50347.59 nano seconds.
+
+     [java] Number of threads: 20.000000.
+     [java] Goodput   : 865.35 requests per second.
+     [java] Latency   : 57780.29 nano seconds.
+\end{verbatim}
+\caption{Partial output of local tests with 500 runs and 1-20 threads.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{verbatim}
+     [java] Number of threads: 1.000000.
+     [java] Goodput   : 62.83 requests per second.
+     [java] Latency   : 15917185.59 nano seconds.
+
+     [java] Number of threads: 5.000000.
+     [java] Goodput   : 22.14 requests per second.
+     [java] Latency   : 9031594.66 nano seconds.
+
+     [java] Number of threads: 10.000000.
+     [java] Goodput   : 9.26 requests per second.
+     [java] Latency   : 10803547.13 nano seconds.
+
+     [java] Number of threads: 15.000000.
+     [java] Goodput   : 5.84 requests per second.
+     [java] Latency   : 11407739.80 nano seconds.
+
+     [java] Number of threads: 20.000000.
+     [java] Goodput   : 4.30 requests per second.
+     [java] Latency   : 11622405.76 nano seconds.
+\end{verbatim}
+\caption{Partial output of remote tests with 500 runs and 1-20 threads.}
+\end{figure}
+
