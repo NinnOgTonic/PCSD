@@ -11,7 +11,7 @@ All our tests was run in a Lenovo Thinkpad T420 as seen on Figure \ref{fig:hardw
 
 
 \section{Performance plots}
-Our graphs seen in Figure \ref{fig:throughput} and \ref{fig:latency}, these graphs has been generated on the data generated in our tests which can be seen in Appendix SSSSS. It can be observed that the goodput in our setup shows the expected tendencies, especially on the local test where it is clearly visible how the goodput decreases when concurrency increases, as the overhead increases.
+Our graphs seen in Figure \ref{fig:throughput} and \ref{fig:latency}, these graphs has been generated on the data generated in our tests which can be seen in Appendix \ref{app:output}. It can be observed that the goodput in our setup shows the expected tendencies, especially on the local test where it is clearly visible how the goodput decreases when concurrency increases, as the overhead increases.
 
 When we instead look at the latency we have a variance in our remote and local tests, where we can see that in both the tests we start off with a relatively high latency in the test with a single user, which is then decreased when we add additional concurrent requests. We can then see two expected trends, where the remote version increases in latency in relation the the increase in concurrency, while the local version does not due. This is most likely due to the giant overhead caused by using the TCP sockets and HTTP to communicate.
 
