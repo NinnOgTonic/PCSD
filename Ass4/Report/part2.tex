@@ -1,3 +1,5 @@
 \section{Question 2: Distributed Coordination}
 
-loldongs
+In two-phase commit, all participants receive a "prepare to commit" message, and if the participant can commit, it then waits for a confirmation to do so, or a message to abort. Since they have committed themselves to commit unless told otherwise, they must delay while awaiting the final confirmation.
+
+In three-phase commit, all participants are instead asked "can you commit?", and if the participant can commit, it awaits instructions to either pre-commit or abort. But, since it knows the decision to commit has not yet been made (that would be signified by a pre-commit message), the incoming instruction can time out, and the commit can be aborted. If it then receives a "prepare to commit", it knows the decision to commit has been made, and if the incoming instruction to finally commit times out, the participant can safely commit anyway. Thus it is not blocking, and delays are at most the timeout period.
