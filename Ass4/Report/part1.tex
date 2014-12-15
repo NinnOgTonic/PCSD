@@ -2,4 +2,50 @@
 
 \section{Question 1: Reliability}
 
-loldongs
+Let us say that in the first model, we have two links $L_{AB}$ and
+$L_{BC}$, while in the second model we have an additional link
+$L_{AC}$. Let $F_{PQ}$ be the event that link $L_{PQ}$ has failed. We
+will assume that the probability of any link failing if independent of
+the probability of other links failing.
+
+\paragraph{1.} The daisy chain network will only be connected if all
+links are working. That is:
+\begin{align*}
+P(\textrm{not connected})
+&= 1 - P(\textrm{connected}) \\
+&= 1 - P(\neg F_{AB} \land \neg F_{BC}) \\
+&= 1 - P(\neg F_{AB}) \times P(\neg F_{BC}) \\
+&= 1 - (1 - P(F_{AB})) \times (1 - P(F_{BC})) \\
+&= 1 - (1 - p) \times (1 - p) \\ &
+= 2p - p^2
+\end{align*}
+
+\paragraph{2.} The fully connected network will be connected as long
+as there is at most one failure. There are four independant
+possibilities for this: 1 possiblity of failures and 3 possible
+one-link failures. So we calculate:
+\begin{align*}
+P(\textrm{not connected})
+&= 1 - P(\textrm{connected}) \\
+&= 1 - (P(\neg F_{AB} \land \neg F_{BC} \land \neg F_{AC}) + \\
+&\hspace{2cm} P(F_{AB} \land \neg F_{BC} \land \neg F_{AC}) + \\
+&\hspace{2cm} P(\neg F_{AB} \land F_{BC} \land \neg F_{AC}) + \\
+&\hspace{2cm} P(\neg F_{AB} \land \neg F_{BC} \land F_{AC})) \\
+&= 1 - ((1 - p)^3 + 3p(1-p)^2) \\
+&= 1 - ((1 - 3p + 3p^2 - p^3) + 3p(1 - 2p + p^2)) \\
+&= 1 - (1 - 3p + 3p^2 - p^3 + 3p - 6p^2 + 3p^^3) \\
+&= 1 - 1 + 3p - 3p^2 + p^3 - 3p + 6p^2 - 3p^3 \\
+&= 3p^2 - 2p^3 \\
+\end{align*}
+
+\paragraph{3.} For daisy-chained network we have:
+\begin{align*}
+P(\textrm{not connected}) = 2p - p^2 = 2 \times 10^{-6} - 10^{-12} \approx 2 \times 10^{-6}
+\end{align*}
+
+For the fully connected network, we have:
+\begin{align*}
+P(\textrm{not connected}) = 3p^2 - 2p^3 = 3 \times 10^{-8} - 2 \times 10^{-12} \approx 3 \times 10^{-8}
+\end{align*}
+
+So if we assume a similar price for the two, they would rather have the fully connected network.
