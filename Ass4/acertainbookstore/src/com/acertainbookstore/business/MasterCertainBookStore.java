@@ -191,7 +191,7 @@ public class MasterCertainBookStore implements ReplicatedBookStore,
         throw new BookStoreException("Not implemented");
     }
 
-    public BookStoreResult removeAllBooks() throws BookStoreException {
+    public synchronized BookStoreResult removeAllBooks() throws BookStoreException {
         ReplicationRequest request = new ReplicationRequest(null,
                 BookStoreMessageTag.REMOVEALLBOOKS);
         List<Future<ReplicationResult>> replicatedSlaveFutures = replicator
@@ -204,7 +204,7 @@ public class MasterCertainBookStore implements ReplicatedBookStore,
         return result;
     }
 
-    public BookStoreResult removeBooks(Set<Integer> isbnSet)
+    public synchronized BookStoreResult removeBooks(Set<Integer> isbnSet)
             throws BookStoreException {
         ReplicationRequest request = new ReplicationRequest(isbnSet,
                 BookStoreMessageTag.REMOVEBOOKS);

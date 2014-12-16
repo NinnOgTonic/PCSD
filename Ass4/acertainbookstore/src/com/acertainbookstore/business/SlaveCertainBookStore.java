@@ -60,4 +60,44 @@ public class SlaveCertainBookStore implements ReplicatedReadOnlyBookStore,
         return result;
     }
 
+    public synchronized BookStoreResult removeBooks(Set<Integer> isbns)
+        throws BookStoreException {
+        bookStore.removeBooks(isbns);
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
+
+    public synchronized BookStoreResult removeAllBooks() throws BookStoreException {
+        bookStore.removeAllBooks();
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
+
+    public synchronized BookStoreResult addBooks(Set<StockBook> bookSet)
+        throws BookStoreException {
+        bookStore.addBooks(bookSet);
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
+
+    public synchronized BookStoreResult addCopies(Set<BookCopy> bookCopiesSet)
+        throws BookStoreException {
+        bookStore.addCopies(bookCopiesSet);
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
+
+    public synchronized BookStoreResult updateEditorPicks
+        (Set<BookEditorPick> editorPicks) throws BookStoreException {
+        bookStore.updateEditorPicks(editorPicks);
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
+
+    public synchronized BookStoreResult buyBooks(Set<BookCopy> booksToBuy)
+        throws BookStoreException {
+        bookStore.buyBooks(booksToBuy);
+        BookStoreResult result = new BookStoreResult(null, ++snapshotId);
+        return result;
+    }
 }
