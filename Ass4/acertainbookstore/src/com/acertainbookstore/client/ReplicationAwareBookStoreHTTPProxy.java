@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.acertainbookstore.client;
 
@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Random;
 
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
@@ -29,11 +30,11 @@ import com.acertainbookstore.utils.BookStoreResult;
 import com.acertainbookstore.utils.BookStoreUtility;
 
 /**
- * 
+ *
  * ReplicationAwareBookStoreHTTPProxy implements the client level synchronous
  * CertainBookStore API declared in the BookStore class. It keeps retrying the
  * API until a consistent reply is returned from the replicas
- * 
+ *
  */
 public class ReplicationAwareBookStoreHTTPProxy implements BookStore {
 	private HttpClient client;
@@ -100,8 +101,16 @@ public class ReplicationAwareBookStoreHTTPProxy implements BookStore {
 
 	}
 
-	public String getReplicaAddress() {
-		return ""; // TODO
+	public String getReplicaAddress() throws BookStoreException {
+		int size = slaveAddresses.size();
+		int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
+		int i = 0;
+		for(String obj : slaveAddresses){
+		    if (i++ == item){
+				return obj;
+		    }
+		}
+        throw new BookStoreException("IMPOSSIBRU!");
 	}
 
 	public String getMasterServerAddress() {
