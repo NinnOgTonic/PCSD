@@ -40,7 +40,7 @@ public class ReplicationAwareBookStoreHTTPProxy implements BookStore {
 	private HttpClient client;
 	private Set<String> slaveAddresses;
 	private String masterAddress;
-	private String filePath = "/universe/acertainbookstore/proxy.properties";
+	private String filePath = "proxy.properties";
 	private volatile long snapshotId = 0;
 
 	public long getSnapshotId() {
