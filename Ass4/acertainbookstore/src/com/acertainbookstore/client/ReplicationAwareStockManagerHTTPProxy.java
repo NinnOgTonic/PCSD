@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Random;
 
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
@@ -96,7 +97,7 @@ public class ReplicationAwareStockManagerHTTPProxy implements StockManager {
 		}
 	}
 
-	public String getReplicaAddress() {
+	public String getReplicaAddress() throws BookStoreException {
 		int size = slaveAddresses.size();
 		int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
 		int i = 0;
@@ -105,7 +106,7 @@ public class ReplicationAwareStockManagerHTTPProxy implements StockManager {
 				return obj;
 		    }
 		}
-		return obj;
+        throw new BookStoreException("IMPOSSIBRU!");
 	}
 
 	public String getMasterServerAddress() {
