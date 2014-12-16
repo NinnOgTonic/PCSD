@@ -97,7 +97,15 @@ public class ReplicationAwareStockManagerHTTPProxy implements StockManager {
 	}
 
 	public String getReplicaAddress() {
-		return ""; // TODO
+		int size = slaveAddresses.size();
+		int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
+		int i = 0;
+		for(String obj : slaveAddresses){
+		    if (i++ == item){
+				return obj;
+		    }
+		}
+		return obj;
 	}
 
 	public String getMasterServerAddress() {

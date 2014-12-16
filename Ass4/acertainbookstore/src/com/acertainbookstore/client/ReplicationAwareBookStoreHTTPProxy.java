@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.acertainbookstore.client;
 
@@ -29,11 +29,11 @@ import com.acertainbookstore.utils.BookStoreResult;
 import com.acertainbookstore.utils.BookStoreUtility;
 
 /**
- * 
+ *
  * ReplicationAwareBookStoreHTTPProxy implements the client level synchronous
  * CertainBookStore API declared in the BookStore class. It keeps retrying the
  * API until a consistent reply is returned from the replicas
- * 
+ *
  */
 public class ReplicationAwareBookStoreHTTPProxy implements BookStore {
 	private HttpClient client;
@@ -101,7 +101,15 @@ public class ReplicationAwareBookStoreHTTPProxy implements BookStore {
 	}
 
 	public String getReplicaAddress() {
-		return ""; // TODO
+		int size = slaveAddresses.size();
+		int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
+		int i = 0;
+		for(String obj : slaveAddresses){
+		    if (i++ == item){
+				return obj;
+		    }
+		}
+		return obj;
 	}
 
 	public String getMasterServerAddress() {
