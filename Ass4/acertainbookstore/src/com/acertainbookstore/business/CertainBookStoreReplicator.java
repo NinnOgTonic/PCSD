@@ -11,9 +11,10 @@ import com.acertainbookstore.interfaces.Replicator;
  * concurrently.
  */
 public class CertainBookStoreReplicator implements Replicator {
-    protected HttpClient client;
+    //protected HttpClient client;
 
     public CertainBookStoreReplicator(int maxReplicatorThreads) {
+        /*
         // TODO:Implement this constructor
         //setServerAddress(serverAddress);
         client = new HttpClient();
@@ -37,12 +38,14 @@ public class CertainBookStoreReplicator implements Replicator {
         // request
         // expires
         client.start();
+        */
     }
 
     public List<Future<ReplicationResult>> replicate(Set<String> slaveServers,
             ReplicationRequest request) {
         // TODO: Implement this method
-        for(Sting slave : slaveServers) {
+        for(String slave : slaveServers) {
+            /*
             ContentExchange exchange = new ContentExchange();
             String urlString = slave + "/" + request.messageType;
 
@@ -53,10 +56,12 @@ public class CertainBookStoreReplicator implements Replicator {
             exchange.setRequestContent(requestContent);
 
             BookStoreUtility.SendAndRecv(this.client, exchange);
+            */
         }
         return null;
     }
 
+    /*
     public void stop() {
         try {
             client.stop();
@@ -65,5 +70,6 @@ public class CertainBookStoreReplicator implements Replicator {
             e.printStackTrace();
         }
     }
+    */
 
 }
